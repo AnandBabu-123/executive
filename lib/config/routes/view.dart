@@ -1,0 +1,9 @@
+export '../../views/login_view/login_screen.dart';
+export '../../views/splash_screen/splash_screen.dart';
+export '../../views/profile_screen/profile_screen.dart';
+export '../../views/home_screen/home_screen.dart';
+export '../../views/home_screen/app_drawer.dart';
+export '../../views/otp_verify/otp_verify_screen.dart';
+export '../../views/bank_details/bank_details_screen.dart';
+export '../../views/wallet_screen/wallet_screen.dart';
+export '../../views/contact_us_screen/contact_screen.dart';
