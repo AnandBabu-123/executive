@@ -11,13 +11,17 @@ import 'package:executive/views/splash_screen/splash_screen.dart';
 import 'package:executive/views/wallet_screen/wallet_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../bloc/agent_bloc/agent_bloc.dart';
 import '../../bloc/bank_bloc/bank_bloc.dart';
 import '../../bloc/contact_bloc/contact_bloc.dart';
 import '../../bloc/login_bloc/login_bloc.dart';
 import '../../bloc/otp_bloc/otp_bloc.dart';
 import '../../bloc/profile_bloc/profile_bloc.dart';
+import '../../bloc/user_bloc/user_bloc.dart';
 import '../../network/dio_network/dio_client.dart';
 import '../../network/dio_network/network_info.dart';
+import '../../repository/agent_repo/agent_repository.dart';
+import '../../repository/agent_repo/post_agent_repository.dart';
 import '../../repository/bank_details_repository/add_bank_repository.dart';
 import '../../repository/bank_details_repository/bank_details_repository.dart';
 import '../../repository/bank_details_repository/update_bank_repository.dart';
@@ -26,6 +30,10 @@ import '../../repository/login_repo/login_repository.dart';
 import '../../repository/otp_repo/otp_repository.dart';
 import '../../repository/profile_repo/profile_repository.dart';
 import '../../repository/profile_repo/update_profole_repository.dart';
+import '../../repository/user_repo/user_post_repository.dart';
+import '../../repository/user_repo/user_repository.dart';
+import '../../views/agent_screen/agent_screen.dart';
+import '../../views/user_screen/user_screen.dart';
 import '../session_manager/session_manager.dart';
 
 
@@ -181,6 +189,53 @@ class Routes {
             child: const ContactScreen(),
           ),
         );
+
+
+      case RoutesName.agentScreen:
+        return MaterialPageRoute(
+          builder: (context) {
+            // Create DioClient once
+            final dioClient = DioClient(
+              dio: Dio(),
+              networkInfo: NetworkInfo(),
+              tokenProvider: () async => await SessionManager.getToken(),
+            );
+
+            return BlocProvider<AgentBloc>(
+              create: (_) => AgentBloc(
+                agentRepository: AgentRepository(dioClient),
+                postAgentRepository: PostAgentRepository(dioClient),
+              ),
+              child: const AgentScreen(),
+            );
+          },
+        );
+
+      case RoutesName.userScreen:
+        return MaterialPageRoute(
+          builder: (context) {
+            // Create DioClient once
+            final dioClient = DioClient(
+              dio: Dio(),
+              networkInfo: NetworkInfo(),
+              tokenProvider: () async => await SessionManager.getToken(),
+            );
+
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider<UserBloc>(
+                  create: (_) => UserBloc(
+                    userRepository: UserRepository(dioClient),
+                    userPostRepository: UserPostRepository(dioClient),
+                  ),
+                ),
+                // Optional: You can add BloodGroupBloc or CategoryBloc here if using Bloc for dropdowns
+              ],
+              child: const UserScreen(),
+            );
+          },
+        );
+
     /// ================= HOME =================
       case RoutesName.homeScreen:
         return MaterialPageRoute(

@@ -1,4 +1,5 @@
 import 'package:executive/config/colors/app_colors.dart';
+import 'package:executive/config/routes/routes_name.dart';
 import 'package:flutter/material.dart';
 import '../../config/session_manager/session_manager.dart';
 import 'app_drawer.dart';
@@ -203,14 +204,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: Icons.person_add,
                     label: "Add User",
                     color: Colors.blue,
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushNamed(context, RoutesName.agentScreen);
+                    },
                   ),
 
                   _buildMenuItem(
                     icon: Icons.bar_chart,
                     label: "Sales",
                     color: Colors.green,
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pushNamed(context, RoutesName.userScreen);
+                    },
                   ),
 
                   _buildMenuItem(

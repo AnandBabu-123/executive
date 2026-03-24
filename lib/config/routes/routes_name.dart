@@ -8,4 +8,6 @@ class RoutesName {
   static const String bankDetails ="bank_details";
   static const String walletScreen="wallet_screen";
   static const String contactUsScreen ="contact_us_screen";
+  static const String agentScreen = "agent_screen";
+  static const String userScreen = "user_screen";
 }

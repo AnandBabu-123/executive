@@ -7,3 +7,5 @@ export '../../views/otp_verify/otp_verify_screen.dart';
 export '../../views/bank_details/bank_details_screen.dart';
 export '../../views/wallet_screen/wallet_screen.dart';
 export '../../views/contact_us_screen/contact_screen.dart';
+export '../../views/agent_screen/agent_screen.dart';
+export '../../views/user_screen/user_screen.dart';
