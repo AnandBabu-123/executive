@@ -10,4 +10,7 @@ class RoutesName {
   static const String contactUsScreen ="contact_us_screen";
   static const String agentScreen = "agent_screen";
   static const String userScreen = "user_screen";
+  static const String aboutScreen ="about_screen";
+  static const String privacyScreen ="privacy_screen";
+  static const String termsScreen ="terms_screen";
 }

@@ -8,7 +8,7 @@ import '../../bloc/agent_bloc/agent_state.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import '../../config/session_manager/session_manager.dart';
-
+import '../../model/agent_model/agent_model.dart';
 
 
 class AgentScreen extends StatefulWidget {
@@ -23,6 +23,9 @@ class _AgentScreenState extends State<AgentScreen> {
   final ScrollController scrollController = ScrollController();
   late AgentBloc agentBloc;
 
+  List<Agent> allAgents = []; // Store all agents for local search
+  List<Agent> displayedAgents = []; // Display filtered agents
+
   @override
   void initState() {
     super.initState();
@@ -30,7 +33,8 @@ class _AgentScreenState extends State<AgentScreen> {
     agentBloc.add(FetchAgents());
 
     scrollController.addListener(() {
-      if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
         final state = agentBloc.state;
         if (state is AgentLoaded && state.currentPage <= state.lastPage) {
           agentBloc.add(FetchAgents());
@@ -50,19 +54,41 @@ class _AgentScreenState extends State<AgentScreen> {
     );
   }
 
+  void _filterAgents(String query) {
+    if (query.isEmpty) {
+      setState(() {
+        displayedAgents = List.from(allAgents);
+      });
+    } else {
+      final filtered = allAgents.where((agent) {
+        final lowerQuery = query.toLowerCase();
+        return agent.name.toLowerCase().contains(lowerQuery) ||
+            agent.email.toLowerCase().contains(lowerQuery) ||
+            agent.mobile.toLowerCase().contains(lowerQuery);
+      }).toList();
+
+      setState(() {
+        displayedAgents = filtered;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       appBar: AppBar(
         backgroundColor: AppColors.blue,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           "Agent List",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            fontSize: 19,
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ),
       body: Column(
@@ -77,47 +103,69 @@ class _AgentScreenState extends State<AgentScreen> {
                 filled: true,
                 fillColor: Colors.white,
                 prefixIcon: const Icon(Icons.search),
-                contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                contentPadding:
+                const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10)),
               ),
-              onChanged: (value) => agentBloc.add(FetchAgents(search: value, reset: true)),
+              onChanged: _filterAgents,
             ),
           ),
 
           // Agents List
           Expanded(
-            child: BlocBuilder<AgentBloc, AgentState>(
+            child: BlocConsumer<AgentBloc, AgentState>(
+              listener: (context, state) {
+                if (state is AgentLoaded) {
+                  // Update local agent lists
+                  allAgents = state.agents;
+                  displayedAgents = List.from(allAgents);
+                }
+              },
               builder: (context, state) {
                 if (state is AgentLoading && state is! AgentLoaded) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is AgentError) {
-                  return Center(child: Text(" No data"));
+                  return const Center(child: Text("No data"));
                 } else if (state is AgentLoaded) {
-                  if (state.agents.isEmpty) return const Center(child: Text("No agents found"));
+                  if (displayedAgents.isEmpty) {
+                    return const Center(child: Text("No agents found"));
+                  }
 
                   return ListView.builder(
                     controller: scrollController,
-                    itemCount: state.agents.length,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    itemCount: displayedAgents.length,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 8),
                     itemBuilder: (_, index) {
-                      final agent = state.agents[index];
+                      final agent = displayedAgents[index];
                       return Container(
                         margin: const EdgeInsets.symmetric(vertical: 8),
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
-                          boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 5, offset: const Offset(0, 2))],
+                          boxShadow: const [
+                            BoxShadow(
+                                color: Colors.grey,
+                                blurRadius: 5,
+                                offset: Offset(0, 2)),
+                          ],
                         ),
                         child: Row(
                           children: [
-                            CircleAvatar(radius: 25, backgroundImage: NetworkImage(agent.image)),
+                            CircleAvatar(
+                              radius: 25,
+                              backgroundImage: NetworkImage(agent.image),
+                            ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(agent.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                  Text(agent.name,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold)),
                                   Text(agent.email),
                                   Text(agent.mobile),
                                 ],
@@ -129,6 +177,7 @@ class _AgentScreenState extends State<AgentScreen> {
                     },
                   );
                 }
+
                 return const SizedBox();
               },
             ),
@@ -137,7 +186,10 @@ class _AgentScreenState extends State<AgentScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openAddAgentBottomSheet,
-        label: const Text("Add Agent",style: TextStyle(color: AppColors.whiteColor),),
+        label: const Text(
+          "Add Agent",
+          style: TextStyle(color: AppColors.whiteColor),
+        ),
         backgroundColor: AppColors.blue,
       ),
     );
@@ -145,7 +197,6 @@ class _AgentScreenState extends State<AgentScreen> {
 }
 
 // ---------------- Add Agent Bottom Sheet ---------------- //
-
 class AddAgentBottomSheet extends StatefulWidget {
   final AgentBloc agentBloc;
   const AddAgentBottomSheet({super.key, required this.agentBloc});
@@ -163,6 +214,9 @@ class _AddAgentBottomSheetState extends State<AddAgentBottomSheet> {
   String? gender;
   XFile? pickedImage;
   final ImagePicker _picker = ImagePicker();
+
+  String? buttonMessage;
+  Color buttonMessageColor = Colors.red;
 
   Future<void> _pickImage() async {
     final source = await showDialog<ImageSource>(
@@ -182,15 +236,31 @@ class _AddAgentBottomSheetState extends State<AddAgentBottomSheet> {
     if (picked != null) {
       final file = File(picked.path);
       final sizeInMB = await file.length() / (1024 * 1024);
-
       if (sizeInMB > 2) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Image should be less than 2MB"), backgroundColor: Colors.red));
+        _showButtonMessage("Image should be less than 2MB", isError: true);
         return;
       }
-
       setState(() => pickedImage = picked);
     }
+  }
+
+  void _showButtonMessage(
+      String msg, {
+        bool isError = true,
+        bool isSuccess = false,
+      }) {
+    setState(() {
+      buttonMessage = msg;
+      buttonMessageColor = isError
+          ? Colors.red
+          : (isSuccess ? Colors.green : Colors.grey.shade800);
+    });
+
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) {
+        setState(() => buttonMessage = null);
+      }
+    });
   }
 
   Widget _input(String label, TextEditingController controller, {TextInputType keyboardType = TextInputType.text}) {
@@ -199,59 +269,98 @@ class _AddAgentBottomSheetState extends State<AddAgentBottomSheet> {
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
-        decoration: InputDecoration(labelText: label, border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+        ),
       ),
     );
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.75,
       child: Padding(
-        padding: EdgeInsets.only(left: 16, right: 16, top: 20, bottom: MediaQuery.of(context).viewInsets.bottom + 20),
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          top: 20,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+        ),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Header
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text("Add Agent", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)),
+                  const Text(
+                    "Add Agent",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
                 ],
               ),
               const SizedBox(height: 20),
+
+              // Profile image
               Center(
                 child: GestureDetector(
                   onTap: _pickImage,
                   child: CircleAvatar(
                     radius: 40,
                     backgroundColor: Colors.grey[300],
-                    backgroundImage: pickedImage != null ? FileImage(File(pickedImage!.path)) : null,
-                    child: pickedImage == null ? const Icon(Icons.camera_alt, size: 40) : null,
+                    backgroundImage: pickedImage != null
+                        ? FileImage(File(pickedImage!.path))
+                        : null,
+                    child: pickedImage == null
+                        ? const Icon(Icons.camera_alt, size: 40)
+                        : null,
                   ),
                 ),
               ),
               const SizedBox(height: 20),
+
+              // Form fields
               _input("Name", name),
               _input("Email", email, keyboardType: TextInputType.emailAddress),
               _input("Mobile", mobile, keyboardType: TextInputType.phone),
+
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: DropdownButtonFormField<String>(
-                  initialValue: gender,
-                  decoration: InputDecoration(labelText: "Gender", border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
-                  items: ["male", "female", "other"].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+                  value: gender,
+                  decoration: InputDecoration(
+                    labelText: "Gender",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  items: ["male", "female", "other"]
+                      .map((e) =>
+                      DropdownMenuItem(value: e, child: Text(e)))
+                      .toList(),
                   onChanged: (val) => setState(() => gender = val),
                 ),
               ),
+
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: TextFormField(
                   controller: dob,
                   readOnly: true,
-                  decoration: InputDecoration(labelText: "Date of Birth", border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
+                  decoration: InputDecoration(
+                    labelText: "Date of Birth",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
                   onTap: () async {
                     final picked = await showDatePicker(
                       context: context,
@@ -259,41 +368,77 @@ class _AddAgentBottomSheetState extends State<AddAgentBottomSheet> {
                       firstDate: DateTime(1900),
                       lastDate: DateTime.now(),
                     );
-                    if (picked != null) dob.text = "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+
+                    if (picked != null) {
+                      dob.text =
+                      "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+                    }
                   },
                 ),
               ),
+
               _input("Occupation", occupation),
-              const SizedBox(height: 20),
+
+              const SizedBox(height: 10),
+
+              // ✅ MESSAGE CONTAINER (UPDATED)
+              if (buttonMessage != null)
+                Container(
+                  width: double.infinity,
+                  padding:
+                  const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: buttonMessageColor ??
+                        Colors.red, // red / green dynamic
+                    borderRadius:
+                    BorderRadius.circular(10), // ✅ radius 10
+                  ),
+                  child: Text(
+                    buttonMessage!,
+                    style: const TextStyle(
+                      color: Colors.white, // ✅ white text
+                      fontWeight: FontWeight.w500,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+
+              // Save button
               BlocConsumer<AgentBloc, AgentState>(
                 bloc: widget.agentBloc,
                 listener: (context, state) {
-                  String message = "";
-                  Color bgColor = Colors.green;
-
                   if (state is AgentAdded) {
-                    message = "Agent Added Successfully";
-                    bgColor = Colors.green;
+                    _showButtonMessage(
+                      "Agent Added Successfully",
+                      isError: false,
+                      isSuccess: true,
+                    );
+
+                    Future.delayed(
+                      const Duration(milliseconds: 500),
+                          () => Navigator.pop(context),
+                    );
                   } else if (state is AgentAddError) {
-                    message = state.message;
-                    bgColor = Colors.red;
-                  } else {
-                    return; // ignore other states
+                    _showButtonMessage(state.message, isError: true);
                   }
-
-                  // Show SnackBar
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(message), backgroundColor: bgColor),
-                  );
-
-                  // Dismiss BottomSheet after showing message
-                  Navigator.pop(context);
                 },
                 builder: (context, state) {
                   final loading = state is AgentAdding;
+
                   return SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.blue, // ✅ blue bg
+                        foregroundColor: Colors.white,   // ✅ white text
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                          BorderRadius.circular(10), // ✅ radius 10
+                        ),
+                        padding:
+                        const EdgeInsets.symmetric(vertical: 14),
+                      ),
                       onPressed: loading
                           ? null
                           : () async {
@@ -303,34 +448,37 @@ class _AddAgentBottomSheetState extends State<AddAgentBottomSheet> {
                             gender == null ||
                             dob.text.isEmpty ||
                             occupation.text.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("Please fill all required fields"),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
+                          _showButtonMessage(
+                              "Please fill all required fields");
                           return;
                         }
 
-                        //  Get user_id from SessionManager
-                        final userId = await SessionManager.getUserId();
+                        final userId =
+                        await SessionManager.getUserId();
 
-                        widget.agentBloc.add(AddAgent(
-                          name: name.text,
-                          email: email.text,
-                          mobile: mobile.text,
-                          gender: gender!,
-                          dob: dob.text,
-                          occupation: occupation.text,
-                          image: pickedImage != null ? File(pickedImage!.path) : null,
-                          userId: userId!,
-                        ));
+                        widget.agentBloc.add(
+                          AddAgent(
+                            name: name.text,
+                            email: email.text,
+                            mobile: mobile.text,
+                            gender: gender!,
+                            dob: dob.text,
+                            occupation: occupation.text,
+                            image: pickedImage != null
+                                ? File(pickedImage!.path)
+                                : null,
+                            userId: userId!,
+                          ),
+                        );
                       },
                       child: loading
                           ? const SizedBox(
                         width: 24,
                         height: 24,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
                       )
                           : const Text("Save"),
                     ),

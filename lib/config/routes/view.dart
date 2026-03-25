@@ -9,3 +9,6 @@ export '../../views/wallet_screen/wallet_screen.dart';
 export '../../views/contact_us_screen/contact_screen.dart';
 export '../../views/agent_screen/agent_screen.dart';
 export '../../views/user_screen/user_screen.dart';
+export '../../views/about_screen/about_screen.dart';
+export '../../views/about_screen/terms_screen.dart';
+export '../../views/about_screen/privacy_screen.dart';

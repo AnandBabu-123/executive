@@ -77,13 +77,18 @@ class _HomeScreenState extends State<HomeScreen> {
           /// WALLET ICON
           Padding(
             padding: const EdgeInsets.only(right: 10),
-            child: CircleAvatar(
-              backgroundColor: Colors.white,
-              radius: 18,
-              child: const Icon(
-                Icons.account_balance_wallet,
-                color: AppColors.blue,
-                size: 20,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, RoutesName.walletScreen);
+              },
+              child: CircleAvatar(
+                backgroundColor: Colors.white,
+                radius: 18,
+                child: const Icon(
+                  Icons.account_balance_wallet,
+                  color: AppColors.blue,
+                  size: 20,
+                ),
               ),
             ),
           ),
@@ -222,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     label: "Users",
                     color: Colors.blue,
                     onTap: () {
-                      Navigator.pushNamed(context, RoutesName.agentScreen);
+                      Navigator.pushNamed(context, RoutesName.userScreen);
                     },
                   ),
 
@@ -231,7 +236,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     label: "Agents",
                     color: Colors.green,
                     onTap: () {
-                      Navigator.pushNamed(context, RoutesName.userScreen);
+                      Navigator.pushNamed(context, RoutesName.agentScreen);
                     },
                   ),
 

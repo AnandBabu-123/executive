@@ -1,14 +1,10 @@
 import 'package:executive/config/routes/routes_name.dart';
 import 'package:flutter/material.dart';
-
 import '../../config/session_manager/session_manager.dart';
 
-import 'package:flutter/material.dart';
-
-import 'package:flutter/material.dart';
 
 class AppDrawer extends StatefulWidget {
-  final BuildContext rootContext; // must pass scaffold context
+  final BuildContext rootContext;
   const AppDrawer({super.key, required this.rootContext});
 
   @override
@@ -33,7 +29,7 @@ class _AppDrawerState extends State<AppDrawer> {
     final uniQueCode = await SessionManager.getUniqueId();
     final userEmail = await SessionManager.getEmail();
 
-    if (!mounted) return; // safety check
+    if (!mounted) return;
     setState(() {
       name = userName ?? "";
       type = userType ?? "";
@@ -47,18 +43,14 @@ class _AppDrawerState extends State<AppDrawer> {
     return Drawer(
       child: Column(
         children: [
-          // ================= DRAWER HEADER =================
+          /// ================= HEADER =================
           UserAccountsDrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue.shade700,
-            ),
+            decoration: BoxDecoration(color: Colors.blue.shade700),
             accountName: Text(
               name.isNotEmpty ? name : "User Name",
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            accountEmail: Text(
-            " Referral Code : ${uniqueCode.isNotEmpty ? uniqueCode : ""}",
-            ),
+            accountEmail: Text("Referral Code : $uniqueCode"),
             currentAccountPicture: CircleAvatar(
               backgroundColor: Colors.white,
               child: Text(
@@ -70,41 +62,52 @@ class _AppDrawerState extends State<AppDrawer> {
                 ),
               ),
             ),
-
           ),
 
-          // ================= DRAWER ITEMS =================
+          /// ================= MENU =================
           _drawerItem(
             icon: Icons.person,
             title: "Profile",
             onTap: () {
-              Navigator.of(widget.rootContext).pushNamed(RoutesName.profileScreen);
+              Navigator.of(widget.rootContext)
+                  .pushNamed(RoutesName.profileScreen);
             },
           ),
+
           _drawerItem(
             icon: Icons.account_balance,
             title: "Bank Details",
             onTap: () {
-              Navigator.of(widget.rootContext).pushNamed(RoutesName.bankDetails);
+              Navigator.of(widget.rootContext)
+                  .pushNamed(RoutesName.bankDetails);
             },
           ),
+
           _drawerItem(
-            icon: Icons.info_outline,
+            icon: Icons.contact_phone_outlined,
             title: "Contact Us",
             onTap: () {
-              Navigator.of(widget.rootContext).pushNamed(RoutesName.contactUsScreen);
+              Navigator.of(widget.rootContext)
+                  .pushNamed(RoutesName.contactUsScreen);
             },
           ),
 
-          const Spacer(),
-          const Divider(),
+          _drawerItem(
+            icon: Icons.info_outline,
+            title: "About",
+            onTap: () {
+              Navigator.of(widget.rootContext)
+                  .pushNamed(RoutesName.aboutScreen);
+            },
+          ),
 
+          /// ✅ LOGOUT (MOVED HERE)
           _drawerItem(
             icon: Icons.logout,
             title: "Logout",
             color: Colors.red,
             onTap: () async {
-              Navigator.pop(context); // close drawer
+              Navigator.pop(context);
               await Future.delayed(const Duration(milliseconds: 250));
 
               showDialog(
@@ -112,14 +115,12 @@ class _AppDrawerState extends State<AppDrawer> {
                 barrierDismissible: false,
                 builder: (dialogContext) => AlertDialog(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20), // rounded dialog
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   contentPadding: const EdgeInsets.all(24),
                   content: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-
-
                       const Text(
                         "Logout",
                         style: TextStyle(
@@ -135,11 +136,8 @@ class _AppDrawerState extends State<AppDrawer> {
                       ),
                       const SizedBox(height: 24),
 
-                      // Buttons
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          // Cancel button
                           Expanded(
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
@@ -148,20 +146,14 @@ class _AppDrawerState extends State<AppDrawer> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                padding: const EdgeInsets.symmetric(vertical: 14),
                               ),
                               onPressed: () {
                                 Navigator.of(dialogContext).pop();
                               },
-                              child: const Text(
-                                "Cancel",
-                                style: TextStyle(fontSize: 16),
-                              ),
+                              child: const Text("Cancel"),
                             ),
                           ),
                           const SizedBox(width: 16),
-
-                          // Logout button
                           Expanded(
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
@@ -170,22 +162,20 @@ class _AppDrawerState extends State<AppDrawer> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                padding: const EdgeInsets.symmetric(vertical: 14),
                               ),
                               onPressed: () async {
                                 Navigator.of(dialogContext).pop();
                                 await SessionManager.clearSession();
+
                                 if (widget.rootContext.mounted) {
-                                  Navigator.of(widget.rootContext).pushNamedAndRemoveUntil(
+                                  Navigator.of(widget.rootContext)
+                                      .pushNamedAndRemoveUntil(
                                     RoutesName.loginScreen,
                                         (route) => false,
                                   );
                                 }
                               },
-                              child: const Text(
-                                "Logout",
-                                style: TextStyle(fontSize: 16),
-                              ),
+                              child: const Text("Logout"),
                             ),
                           ),
                         ],
@@ -196,12 +186,65 @@ class _AppDrawerState extends State<AppDrawer> {
               );
             },
           ),
+
+          const Spacer(),
+
+          const Divider(),
+
+          /// ================= BOTTOM LINKS =================
+          Padding(
+            padding: const EdgeInsets.only(left: 40),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Terms & Conditions
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(widget.rootContext).pushNamed(RoutesName.termsScreen);
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 6,horizontal: 4),
+                    child: Text(
+                      "Terms & Conditions",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.blue,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Privacy Policy (centered)
+                Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(widget.rootContext).pushNamed(RoutesName.privacyScreen);
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 6),
+                      child: Text(
+                        "Privacy Policy",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.blue,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
           const SizedBox(height: 20),
         ],
       ),
     );
   }
 
+  /// ================= COMMON DRAWER ITEM =================
   Widget _drawerItem({
     required IconData icon,
     required String title,

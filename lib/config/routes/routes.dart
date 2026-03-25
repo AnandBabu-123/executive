@@ -11,15 +11,23 @@ import 'package:executive/views/splash_screen/splash_screen.dart';
 import 'package:executive/views/wallet_screen/wallet_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../bloc/about_bloc/about_bloc.dart';
+import '../../bloc/about_bloc/about_event.dart';
 import '../../bloc/agent_bloc/agent_bloc.dart';
 import '../../bloc/bank_bloc/bank_bloc.dart';
 import '../../bloc/contact_bloc/contact_bloc.dart';
 import '../../bloc/login_bloc/login_bloc.dart';
 import '../../bloc/otp_bloc/otp_bloc.dart';
+import '../../bloc/privacy_bloc/privacy_bloc.dart';
 import '../../bloc/profile_bloc/profile_bloc.dart';
+import '../../bloc/terms_bloc/terms_bloc.dart';
 import '../../bloc/user_bloc/user_bloc.dart';
+import '../../bloc/wallet_bloc/wallet_bloc.dart';
 import '../../network/dio_network/dio_client.dart';
 import '../../network/dio_network/network_info.dart';
+import '../../repository/about_repo/about_repository.dart';
+import '../../repository/about_repo/privacy_repository.dart';
+import '../../repository/about_repo/terms_repository.dart';
 import '../../repository/agent_repo/agent_repository.dart';
 import '../../repository/agent_repo/post_agent_repository.dart';
 import '../../repository/bank_details_repository/add_bank_repository.dart';
@@ -32,6 +40,11 @@ import '../../repository/profile_repo/profile_repository.dart';
 import '../../repository/profile_repo/update_profole_repository.dart';
 import '../../repository/user_repo/user_post_repository.dart';
 import '../../repository/user_repo/user_repository.dart';
+import '../../repository/wallet_repository/wallet_repository.dart';
+import '../../repository/wallet_repository/wallet_withdraw_repository.dart';
+import '../../views/about_screen/about_screen.dart';
+import '../../views/about_screen/privacy_screen.dart';
+import '../../views/about_screen/terms_screen.dart';
 import '../../views/agent_screen/agent_screen.dart';
 import '../../views/user_screen/user_screen.dart';
 import '../session_manager/session_manager.dart';
@@ -94,7 +107,21 @@ class Routes {
 
       case RoutesName.walletScreen:
         return MaterialPageRoute(
-          builder: (_) => const WalletScreen(),
+          builder: (context) {
+            final dioClient = DioClient(
+              dio: Dio(),
+              networkInfo: NetworkInfo(),
+              tokenProvider: () async => await SessionManager.getToken(),
+            );
+
+            return BlocProvider(
+              create: (_) => WalletBloc(
+                repository: WalletRepository(dioClient),
+                withdrawRepository: WalletWithdrawRepository(dioClient),
+              ),
+              child: const WalletScreen(),
+            );
+          },
         );
 
         /// bank details screen
@@ -232,6 +259,60 @@ class Routes {
                 // Optional: You can add BloodGroupBloc or CategoryBloc here if using Bloc for dropdowns
               ],
               child: const UserScreen(),
+            );
+          },
+        );
+
+      case RoutesName.aboutScreen:
+        return MaterialPageRoute(
+          builder: (context) {
+            final dioClient = DioClient(
+              dio: Dio(),
+              networkInfo: NetworkInfo(),
+              tokenProvider: () async => await SessionManager.getToken(),
+            );
+
+            return BlocProvider<AboutBloc>(
+              create: (_) => AboutBloc(
+                aboutRepository: AboutRepository(dioClient),
+              )..add(FetchAbout()),
+              child: const AboutScreen(),
+            );
+          },
+        );
+
+      case RoutesName.termsScreen:
+        return MaterialPageRoute(
+          builder: (context) {
+            final dioClient = DioClient(
+              dio: Dio(),
+              networkInfo: NetworkInfo(),
+              tokenProvider: () async => await SessionManager.getToken(),
+            );
+
+            return BlocProvider(
+              create: (_) => TermsBloc(
+                repository: TermsRepository(dioClient),
+              ),
+              child: const TermsScreen(),
+            );
+          },
+        );
+
+      case RoutesName.privacyScreen:
+        return MaterialPageRoute(
+          builder: (context) {
+            final dioClient = DioClient(
+              dio: Dio(),
+              networkInfo: NetworkInfo(),
+              tokenProvider: () async => await SessionManager.getToken(),
+            );
+
+            return BlocProvider(
+              create: (_) => PrivacyBloc(
+                repository: PrivacyRepository(dioClient),
+              ),
+              child: const PrivacyScreen(),
             );
           },
         );

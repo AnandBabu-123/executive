@@ -17,6 +17,10 @@ class AppUrl {
   static const String getBloodGroups = "partner/get-blood-groups";
   static const String getCategories = "partner/get-coverage-categories";
   static const String contactUs = "partner/submit-contact-us";
-
+  static const String about = "partner/get-pages/about_us";
+  static const String terms = "partner/get-pages/terms";
+  static const String privacy = "partner/get-pages/privacy";
+  static const String getWallet ="partner/wallet/history";
+  static const String walletWithDraw ="partner/wallet/debit";
 
 }
