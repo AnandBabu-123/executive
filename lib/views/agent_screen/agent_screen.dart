@@ -335,7 +335,7 @@ class _AddAgentBottomSheetState extends State<AddAgentBottomSheet> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: DropdownButtonFormField<String>(
-                  value: gender,
+                  initialValue: gender,
                   decoration: InputDecoration(
                     labelText: "Gender",
                     border: OutlineInputBorder(
@@ -381,7 +381,7 @@ class _AddAgentBottomSheetState extends State<AddAgentBottomSheet> {
 
               const SizedBox(height: 10),
 
-              // ✅ MESSAGE CONTAINER (UPDATED)
+              //  MESSAGE CONTAINER (UPDATED)
               if (buttonMessage != null)
                 Container(
                   width: double.infinity,
@@ -389,15 +389,14 @@ class _AddAgentBottomSheetState extends State<AddAgentBottomSheet> {
                   const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
                   margin: const EdgeInsets.only(bottom: 12),
                   decoration: BoxDecoration(
-                    color: buttonMessageColor ??
-                        Colors.red, // red / green dynamic
+                    color: buttonMessageColor,
                     borderRadius:
-                    BorderRadius.circular(10), // ✅ radius 10
+                    BorderRadius.circular(10),
                   ),
                   child: Text(
                     buttonMessage!,
                     style: const TextStyle(
-                      color: Colors.white, // ✅ white text
+                      color: Colors.white, //  white text
                       fontWeight: FontWeight.w500,
                     ),
                     textAlign: TextAlign.center,
@@ -430,11 +429,11 @@ class _AddAgentBottomSheetState extends State<AddAgentBottomSheet> {
                     width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.blue, // ✅ blue bg
-                        foregroundColor: Colors.white,   // ✅ white text
+                        backgroundColor: AppColors.blue,
+                        foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius:
-                          BorderRadius.circular(10), // ✅ radius 10
+                          BorderRadius.circular(10),
                         ),
                         padding:
                         const EdgeInsets.symmetric(vertical: 14),

@@ -109,7 +109,7 @@ class _ContactScreenState extends State<ContactScreen> {
                         }
 
                         final emailRegex = RegExp(
-                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                          r'^[\w-]+@([\w-]+\.)+[\w-]{2,4}$',
                         );
 
                         if (!emailRegex.hasMatch(value)) {

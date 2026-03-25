@@ -10,7 +10,12 @@ class UserLoaded extends UserState {
   final List<User> users;
   final int currentPage;
   final int lastPage;
-  UserLoaded({required this.users, required this.currentPage, required this.lastPage});
+
+  UserLoaded({
+    required this.users,
+    required this.currentPage,
+    required this.lastPage,
+  });
 }
 
 class UserError extends UserState {
@@ -18,11 +23,14 @@ class UserError extends UserState {
   UserError(this.message);
 }
 
-class UserAdding extends UserState {}
+/// 🔥 ACTION STATES (DO NOT BREAK UI)
+abstract class UserActionState extends UserState {}
 
-class UserAdded extends UserState {}
+class UserAdding extends UserActionState {}
 
-class UserAddError extends UserState {
+class UserAdded extends UserActionState {}
+
+class UserAddError extends UserActionState {
   final String message;
   UserAddError(this.message);
 }

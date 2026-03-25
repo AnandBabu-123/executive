@@ -390,7 +390,7 @@ class _WithdrawBottomSheetState extends State<WithdrawBottomSheet> {
 Widget _miniItem(String title, int value, Color color) {
   return Column(
     children: [
-      Text(title, style: TextStyle(color: color.withOpacity(0.8))),
+      Text(title, style: TextStyle(color: color)),
       const SizedBox(height: 4),
       Text(
         "₹ $value",

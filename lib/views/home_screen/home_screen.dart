@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
             return IconButton(
               icon: const Icon(Icons.menu, color: Colors.white),
               onPressed: () {
-                Scaffold.of(context).openDrawer(); // ✅ works now
+                Scaffold.of(context).openDrawer();
               },
             );
           },
@@ -218,35 +218,39 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
 
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
+              child: Builder(
+                builder: (_) {
+                  List<Widget> menuItems = [
 
-                  _buildMenuItem(
-                    icon: Icons.person_add,
-                    label: "Users",
-                    color: Colors.blue,
-                    onTap: () {
-                      Navigator.pushNamed(context, RoutesName.userScreen);
-                    },
-                  ),
+                    /// 🔹 USERS
+                    _buildMenuItem(
+                      icon: Icons.person_add,
+                      label: "Users",
+                      color: Colors.black,
+                      onTap: () {
+                        Navigator.pushNamed(context, RoutesName.userScreen);
+                      },
+                    ),
 
-                  _buildMenuItem(
-                    icon: Icons.person,
-                    label: "Agents",
-                    color: Colors.green,
-                    onTap: () {
-                      Navigator.pushNamed(context, RoutesName.agentScreen);
-                    },
-                  ),
+                    /// 🔹 AGENTS (Only Partner)
+                    if (type == "Partner")
+                      _buildMenuItem(
+                        icon: Icons.person,
+                        label: "Agents",
+                       color: Colors.black,
+                        onTap: () {
+                          Navigator.pushNamed(context, RoutesName.agentScreen);
+                        },
+                      ),
+                  ];
 
-                  // _buildMenuItem(
-                  //   icon: Icons.notifications,
-                  //   label: "Notifications",
-                  //   color: Colors.orange,
-                  //   onTap: () {},
-                  // ),
-                ],
+                  return Row(
+                    mainAxisAlignment: menuItems.length == 1
+                        ? MainAxisAlignment.center
+                        : MainAxisAlignment.spaceAround,
+                    children: menuItems,
+                  );
+                },
               ),
             ),
           ],
@@ -290,32 +294,36 @@ class _HomeScreenState extends State<HomeScreen> {
     required IconData icon,
     required String label,
     required Color color,
-    required VoidCallback onTap,
+    VoidCallback? onTap,
   }) {
+    final isDisabled = onTap == null;
+
     return GestureDetector(
       onTap: onTap,
-      child: Column(
-        children: [
-
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
+      child: Opacity(
+        opacity: isDisabled ? 0.5 : 1,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircleAvatar(
+              radius: 24,
+              backgroundColor: color,
+              child: Icon(
+                icon,
+                color: Colors.white,
+                size: 22,
+              ),
             ),
-            child: Icon(icon, color: color, size: 26),
-          ),
-
-          const SizedBox(height: 8),
-
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

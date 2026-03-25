@@ -10,7 +10,7 @@ class UpdateBankRepository {
     print("🔹 UPDATE BANK REQUEST");
     print("URL: ${AppUrl.bankDetails}/$id");
     print("BODY: $body");
-    final response = await dioClient.put(
+    final response = await dioClient.post(
 
       "${AppUrl.bankDetails}/$id", // ✅ keep ID
       data: body,

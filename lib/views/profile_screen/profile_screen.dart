@@ -187,7 +187,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               emailController.text = profile!.email;
               occupation.text = profile!.occupation ?? "";
               dobController.text = profile!.dob ?? "";
-              uniqueId.text = profile!.uniqueId ?? "";
+              uniqueId.text = profile!.uniqueId ;
               selectedGender = profile!.gender;
             }
 
@@ -254,7 +254,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const SizedBox(height: 15),
         _label("Gender"),
         DropdownButtonFormField<String>(
-          value: selectedGender,
+          initialValue: selectedGender,
           items: genderList
               .map((e) => DropdownMenuItem(value: e, child: Text(e, style: const TextStyle(color: Colors.black))))
               .toList(),

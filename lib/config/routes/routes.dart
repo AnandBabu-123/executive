@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:executive/config/routes/routes_name.dart';
 import 'package:executive/views/bank_details/bank_details_screen.dart';
 import 'package:executive/views/contact_us_screen/contact_screen.dart';
-import 'package:executive/views/home_screen/app_drawer.dart';
 import 'package:executive/views/home_screen/home_screen.dart';
 import 'package:executive/views/login_view/login_screen.dart';
 import 'package:executive/views/otp_verify/otp_verify_screen.dart';

@@ -14,28 +14,45 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   int currentPage = 1;
   int lastPage = 1;
 
-  UserBloc({required this.userRepository, required this.userPostRepository}) : super(UserInitial()) {
+  UserBloc({
+    required this.userRepository,
+    required this.userPostRepository,
+  }) : super(UserInitial()) {
+
+    /// ================= FETCH USERS =================
     on<FetchUsers>((event, emit) async {
       try {
         if (event.reset) {
           currentPage = 1;
           users.clear();
         }
+
         emit(UserLoading());
-        final result = await userRepository.getUsers(page: currentPage, search: event.search);
+
+        final result = await userRepository.getUsers(
+          page: currentPage,
+          search: event.search,
+        );
+
         users.addAll(result.data);
         currentPage = result.currentPage + 1;
         lastPage = result.lastPage;
 
-        emit(UserLoaded(users: users, currentPage: currentPage, lastPage: lastPage));
+        emit(UserLoaded(
+          users: users,
+          currentPage: currentPage,
+          lastPage: lastPage,
+        ));
       } catch (e) {
         emit(UserError(e.toString()));
       }
     });
 
+    /// ================= ADD USER =================
     on<AddUser>((event, emit) async {
       try {
-        emit(UserAdding());
+        emit(UserAdding()); // 🔥 LOADER START
+
         await userPostRepository.postUser(
           userId: event.userId,
           name: event.name,
@@ -47,10 +64,11 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           coverageCategoryId: event.coverageCategoryId,
           image: event.image,
         );
-        emit(UserAdded());
-        add(FetchUsers(reset: true));
+
+        emit(UserAdded()); // ✅ SUCCESS
+
       } catch (e) {
-        emit(UserAddError(e.toString()));
+        emit(UserAddError(e.toString())); // ❌ ERROR
       }
     });
   }

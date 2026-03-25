@@ -1,5 +1,6 @@
 import 'package:executive/config/routes/routes_name.dart';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../config/session_manager/session_manager.dart';
 
 
@@ -43,26 +44,82 @@ class _AppDrawerState extends State<AppDrawer> {
     return Drawer(
       child: Column(
         children: [
-          /// ================= HEADER =================
-          UserAccountsDrawerHeader(
-            decoration: BoxDecoration(color: Colors.blue.shade700),
-            accountName: Text(
-              name.isNotEmpty ? name : "User Name",
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            accountEmail: Text("Referral Code : $uniqueCode"),
-            currentAccountPicture: CircleAvatar(
-              backgroundColor: Colors.white,
-              child: Text(
-                name.isNotEmpty ? name[0] : "U",
-                style: TextStyle(
-                  fontSize: 24,
-                  color: Colors.blue.shade700,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+
+
+      UserAccountsDrawerHeader(
+      margin: EdgeInsets.zero,
+        decoration: BoxDecoration(
+          color: Colors.blue.shade700,
+        ),
+
+        /// 🔹 AVATAR SIZE (gives spacing automatically)
+        currentAccountPictureSize: const Size(60, 60),
+
+        /// 🔹 USER NAME (WITH SPACE FROM AVATAR)
+        accountName: Padding(
+          padding: const EdgeInsets.only(top: 8), // ✅ spacing fix
+          child: Text(
+            name.isNotEmpty ? name : "User Name",
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: Colors.white,
             ),
           ),
+        ),
+
+        /// 🔹 REFERRAL + SHARE
+        accountEmail: Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  "Referral Code : $uniqueCode",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+
+              /// 🔹 SHARE ICON
+              GestureDetector(
+                onTap: () {
+                  final referralLink =
+                      "https://medconnect.org.in/bharosa/registration?referral_id=$uniqueCode";
+
+                  Share.share(
+                    "Join using my referral link:\n$referralLink",
+                  );
+                },
+                child: const Padding(
+                  padding: EdgeInsets.only(right: 14),
+                  child: Icon(
+                    Icons.share,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        /// 🔹 PROFILE CIRCLE
+        currentAccountPicture: CircleAvatar(
+          backgroundColor: Colors.white,
+          child: Text(
+            name.isNotEmpty ? name[0].toUpperCase() : "U",
+            style: TextStyle(
+              fontSize: 22,
+              color: Colors.blue.shade700,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
 
           /// ================= MENU =================
           _drawerItem(
