@@ -3,80 +3,131 @@ import 'package:flutter/material.dart';
 
 import '../../config/session_manager/session_manager.dart';
 
-class AppDrawer extends StatelessWidget {
-  const AppDrawer({super.key});
+import 'package:flutter/material.dart';
+
+import 'package:flutter/material.dart';
+
+class AppDrawer extends StatefulWidget {
+  final BuildContext rootContext; // must pass scaffold context
+  const AppDrawer({super.key, required this.rootContext});
+
+  @override
+  State<AppDrawer> createState() => _AppDrawerState();
+}
+
+class _AppDrawerState extends State<AppDrawer> {
+  String name = "";
+  String type = "";
+  String uniqueCode = "";
+  String email = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final userName = await SessionManager.getName();
+    final userType = await SessionManager.getType();
+    final uniQueCode = await SessionManager.getUniqueId();
+    final userEmail = await SessionManager.getEmail();
+
+    if (!mounted) return; // safety check
+    setState(() {
+      name = userName ?? "";
+      type = userType ?? "";
+      uniqueCode = uniQueCode ?? "";
+      email = userEmail ?? "";
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return Drawer(
       child: Column(
         children: [
+          // ================= DRAWER HEADER =================
+          UserAccountsDrawerHeader(
+            decoration: BoxDecoration(
+              color: Colors.blue.shade700,
+            ),
+            accountName: Text(
+              name.isNotEmpty ? name : "User Name",
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            accountEmail: Text(
+            " Referral Code : ${uniqueCode.isNotEmpty ? uniqueCode : ""}",
+            ),
+            currentAccountPicture: CircleAvatar(
+              backgroundColor: Colors.white,
+              child: Text(
+                name.isNotEmpty ? name[0] : "U",
+                style: TextStyle(
+                  fontSize: 24,
+                  color: Colors.blue.shade700,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
 
+          ),
 
-          SizedBox(height:90 ,),
+          // ================= DRAWER ITEMS =================
           _drawerItem(
             icon: Icons.person,
             title: "Profile",
             onTap: () {
-              Navigator.pushNamed(context, RoutesName.profileScreen);
+              Navigator.of(widget.rootContext).pushNamed(RoutesName.profileScreen);
             },
           ),
-
           _drawerItem(
             icon: Icons.account_balance,
             title: "Bank Details",
             onTap: () {
-             Navigator.pushNamed(context, RoutesName.bankDetails);
+              Navigator.of(widget.rootContext).pushNamed(RoutesName.bankDetails);
             },
           ),
-
           _drawerItem(
             icon: Icons.info_outline,
             title: "Contact Us",
             onTap: () {
-              Navigator.pushNamed(context, RoutesName.contactUsScreen);
+              Navigator.of(widget.rootContext).pushNamed(RoutesName.contactUsScreen);
             },
           ),
 
           const Spacer(),
-
           const Divider(),
 
-          /// LOGOUT
           _drawerItem(
             icon: Icons.logout,
             title: "Logout",
             color: Colors.red,
-            onTap: () {
+            onTap: () async {
               Navigator.pop(context); // close drawer
+              await Future.delayed(const Duration(milliseconds: 250));
 
               showDialog(
-                context: context,
+                context: widget.rootContext,
+                barrierDismissible: false,
                 builder: (dialogContext) => AlertDialog(
                   title: const Text("Logout"),
                   content: const Text("Are you sure you want to logout?"),
                   actions: [
                     TextButton(
                       onPressed: () {
-                        Navigator.pop(dialogContext); // close dialog
+                        Navigator.of(dialogContext).pop();
                       },
                       child: const Text("Cancel"),
                     ),
                     TextButton(
                       onPressed: () async {
-                        /// close dialog first
-                        Navigator.pop(dialogContext);
-
+                        Navigator.of(dialogContext).pop();
                         await SessionManager.clearSession();
-
-                        if (!context.mounted) return;
-
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          RoutesName.loginScreen,
-                              (route) => false,
-                        );
+                        if (widget.rootContext.mounted) {
+                          Navigator.of(widget.rootContext).pushNamedAndRemoveUntil(
+                              RoutesName.loginScreen, (route) => false);
+                        }
                       },
                       child: const Text(
                         "Logout",
@@ -88,14 +139,12 @@ class AppDrawer extends StatelessWidget {
               );
             },
           ),
-
           const SizedBox(height: 20),
         ],
       ),
     );
   }
 
-  /// ================= COMMON ITEM =================
   Widget _drawerItem({
     required IconData icon,
     required String title,

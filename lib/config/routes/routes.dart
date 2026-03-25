@@ -243,10 +243,6 @@ class Routes {
         );
 
     /// ================= DRAWER =================
-      case RoutesName.appBar:
-        return MaterialPageRoute(
-          builder: (_) => const AppDrawer(),
-        );
 
     /// ================= DEFAULT =================
       default:

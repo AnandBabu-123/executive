@@ -42,7 +42,11 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
         ),
         title: const Text(
           "OTP Verification",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            fontSize: 19,
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         centerTitle: true,
       ),

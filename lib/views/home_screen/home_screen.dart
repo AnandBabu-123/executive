@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
 
       /// ✅ IMPORTANT: ADD DRAWER HERE
-      drawer: const AppDrawer(),
+      drawer: AppDrawer(rootContext: context),
 
       /// ================= APP BAR =================
       appBar: AppBar(
@@ -65,10 +65,13 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
 
         title: const Text(
-          "Dashboard",
-          style: TextStyle(color: Colors.white),
+          "DashBoard",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ),
         ),
-
+   centerTitle: true,
         actions: [
 
           /// WALLET ICON
@@ -85,19 +88,33 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          /// SWITCH
+
           Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: Switch(
-              value: isAvailable,
-              activeThumbColor: Colors.white,
-              onChanged: (value) {
-                setState(() {
-                  isAvailable = value;
-                });
-              },
+            padding: const EdgeInsets.only(right: 16),
+            child: CircleAvatar(
+              backgroundColor: Colors.white,
+              radius: 18,
+              child: const Icon(
+                Icons.notifications,
+                color: AppColors.blue,
+                size: 20,
+              ),
             ),
           ),
+
+          /// SWITCH
+          // Padding(
+          //   padding: const EdgeInsets.only(right: 12),
+          //   child: Switch(
+          //     value: isAvailable,
+          //     activeThumbColor: Colors.white,
+          //     onChanged: (value) {
+          //       setState(() {
+          //         isAvailable = value;
+          //       });
+          //     },
+          //   ),
+          // ),
         ],
       ),
 
@@ -202,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   _buildMenuItem(
                     icon: Icons.person_add,
-                    label: "Add User",
+                    label: "Users",
                     color: Colors.blue,
                     onTap: () {
                       Navigator.pushNamed(context, RoutesName.agentScreen);
@@ -210,20 +227,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
 
                   _buildMenuItem(
-                    icon: Icons.bar_chart,
-                    label: "Sales",
+                    icon: Icons.person,
+                    label: "Agents",
                     color: Colors.green,
                     onTap: () {
                       Navigator.pushNamed(context, RoutesName.userScreen);
                     },
                   ),
 
-                  _buildMenuItem(
-                    icon: Icons.notifications,
-                    label: "Notifications",
-                    color: Colors.orange,
-                    onTap: () {},
-                  ),
+                  // _buildMenuItem(
+                  //   icon: Icons.notifications,
+                  //   label: "Notifications",
+                  //   color: Colors.orange,
+                  //   onTap: () {},
+                  // ),
                 ],
               ),
             ),
@@ -231,35 +248,35 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
 
-      /// ================= BOTTOM NAV =================
-      bottomNavigationBar: BottomNavigationBar(
-
-        currentIndex: currentIndex,
-
-        onTap: (index) {
-          setState(() {
-            currentIndex = index;
-          });
-        },
-
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Home",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.assignment),
-            label: "Tasks",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: "Profile",
-          ),
-        ],
-      ),
+      // /// ================= BOTTOM NAV =================
+      // bottomNavigationBar: BottomNavigationBar(
+      //
+      //   currentIndex: currentIndex,
+      //
+      //   onTap: (index) {
+      //     setState(() {
+      //       currentIndex = index;
+      //     });
+      //   },
+      //
+      //   selectedItemColor: Colors.blue,
+      //   unselectedItemColor: Colors.grey,
+      //
+      //   items: const [
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.home),
+      //       label: "Home",
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.assignment),
+      //       label: "Tasks",
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.person),
+      //       label: "Profile",
+      //     ),
+      //   ],
+      // ),
     );
   }
 
