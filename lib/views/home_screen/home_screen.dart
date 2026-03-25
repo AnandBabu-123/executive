@@ -302,6 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
       trailing: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
+
           Text(amount,
               style: const TextStyle(fontWeight: FontWeight.bold)),
           Container(
