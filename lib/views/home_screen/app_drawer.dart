@@ -111,30 +111,87 @@ class _AppDrawerState extends State<AppDrawer> {
                 context: widget.rootContext,
                 barrierDismissible: false,
                 builder: (dialogContext) => AlertDialog(
-                  title: const Text("Logout"),
-                  content: const Text("Are you sure you want to logout?"),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(dialogContext).pop();
-                      },
-                      child: const Text("Cancel"),
-                    ),
-                    TextButton(
-                      onPressed: () async {
-                        Navigator.of(dialogContext).pop();
-                        await SessionManager.clearSession();
-                        if (widget.rootContext.mounted) {
-                          Navigator.of(widget.rootContext).pushNamedAndRemoveUntil(
-                              RoutesName.loginScreen, (route) => false);
-                        }
-                      },
-                      child: const Text(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20), // rounded dialog
+                  ),
+                  contentPadding: const EdgeInsets.all(24),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+
+
+                      const Text(
                         "Logout",
-                        style: TextStyle(color: Colors.red),
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 8),
+                      const Text(
+                        "Are you sure you want to logout?",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16, color: Colors.black54),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Buttons
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          // Cancel button
+                          Expanded(
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey.shade200,
+                                foregroundColor: Colors.black,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                              ),
+                              onPressed: () {
+                                Navigator.of(dialogContext).pop();
+                              },
+                              child: const Text(
+                                "Cancel",
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+
+                          // Logout button
+                          Expanded(
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.redAccent,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                              ),
+                              onPressed: () async {
+                                Navigator.of(dialogContext).pop();
+                                await SessionManager.clearSession();
+                                if (widget.rootContext.mounted) {
+                                  Navigator.of(widget.rootContext).pushNamedAndRemoveUntil(
+                                    RoutesName.loginScreen,
+                                        (route) => false,
+                                  );
+                                }
+                              },
+                              child: const Text(
+                                "Logout",
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

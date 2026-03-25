@@ -34,10 +34,24 @@ class _ContactScreenState extends State<ContactScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true, // ✅ IMPORTANT
-
+     backgroundColor: AppColors.whiteColor,
       appBar: AppBar(
-        title: const Text("Contact Us"),
         backgroundColor: AppColors.blue,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: const Text(
+          "Contact Us",
+          style: TextStyle(
+            fontSize: 19,
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        centerTitle: true,
       ),
 
       /// ================= BODY =================
@@ -210,7 +224,8 @@ class _ContactScreenState extends State<ContactScreen> {
                   )
                       : const Text(
                     "Submit",
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.white, fontSize: 16,
+                    ),
                   ),
                 ),
               ),
@@ -237,7 +252,7 @@ class _ContactScreenState extends State<ContactScreen> {
       decoration: InputDecoration(
         hintText: hint,
         filled: true,
-        fillColor: Colors.grey.shade100,
+        fillColor: Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
         ),
