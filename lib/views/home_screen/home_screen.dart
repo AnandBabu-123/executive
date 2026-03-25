@@ -1,10 +1,15 @@
 import 'package:executive/config/colors/app_colors.dart';
 import 'package:executive/config/routes/routes_name.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import '../../config/session_manager/session_manager.dart';
+import '../subscription_screen/subscription_screen.dart';
 import 'app_drawer.dart';
 
 
+
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,316 +19,305 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
-  bool isAvailable = true;
   int currentIndex = 0;
 
-  String name = "";
-  String type = "";
-  String uniqueCode = "";
-
-  @override
-  void initState() {
-    super.initState();
-    _loadUserData();
-  }
-
-  Future<void> _loadUserData() async {
-    final userName = await SessionManager.getName();
-    final userType = await SessionManager.getType();
-    final uniQueCode = await SessionManager.getUniqueId();
-
-
-    setState(() {
-      name = userName ?? "";
-      type = userType ?? "";
-      uniqueCode = uniQueCode ?? "";
-    });
-  }
+  String name = "Uday";
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
-      /// ✅ IMPORTANT: ADD DRAWER HERE
-      drawer: AppDrawer(rootContext: context),
+      drawer: const Drawer(), // your drawer
 
       /// ================= APP BAR =================
       appBar: AppBar(
         backgroundColor: AppColors.blue,
+        elevation: 0,
 
         leading: Builder(
-          builder: (context) {
-            return IconButton(
-              icon: const Icon(Icons.menu, color: Colors.white),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-            );
-          },
-        ),
-
-        title: const Text(
-          "DashBoard",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu, color: Colors.white),
+            onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
-   centerTitle: true,
-        actions: [
 
-          /// WALLET ICON
+        title: SvgPicture.asset(
+          "assets/logo.svg",
+          height: 28,
+        ),
+
+        actions: const [
           Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, RoutesName.walletScreen);
-              },
-              child: CircleAvatar(
-                backgroundColor: Colors.white,
-                radius: 18,
-                child: const Icon(
-                  Icons.account_balance_wallet,
-                  color: AppColors.blue,
-                  size: 20,
-                ),
-              ),
-            ),
-          ),
-
-
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
+            padding: EdgeInsets.only(right: 12),
             child: CircleAvatar(
-              backgroundColor: Colors.white,
-              radius: 18,
-              child: const Icon(
-                Icons.notifications,
-                color: AppColors.blue,
-                size: 20,
-              ),
+              backgroundImage: AssetImage("assets/userLogo.png",),
             ),
-          ),
-
-          /// SWITCH
-          // Padding(
-          //   padding: const EdgeInsets.only(right: 12),
-          //   child: Switch(
-          //     value: isAvailable,
-          //     activeThumbColor: Colors.white,
-          //     onChanged: (value) {
-          //       setState(() {
-          //         isAvailable = value;
-          //       });
-          //     },
-          //   ),
-          // ),
+          )
         ],
       ),
 
       /// ================= BODY =================
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-
+      body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20,),
 
-            /// PROFILE ROW
-            Row(
-              children: [
-
-                const CircleAvatar(
-                  radius: 30,
-                  backgroundImage: AssetImage("assets/icon.png"),
+            /// 🔷 TOP GRADIENT HEADER
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.blue.shade900,
+                      Colors.blue.shade500,
+                    ],
+                  ),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(25),
+                    topRight: Radius.circular(25),
+                    bottomLeft: Radius.circular(25),
+                    bottomRight: Radius.circular(25),
+                  ),
                 ),
-
-                const SizedBox(width: 20),
-
-                Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children:  [
+                  children: [
+
+                    const SizedBox(height: 10),
 
                     Text(
-                      name.isEmpty ? "User" : name,
+                      "Welcome, $name!",
                       style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
 
-                    SizedBox(height: 4),
+                    const SizedBox(height: 20),
 
-                    Text(
-                      type.isEmpty ? "Executive" : type,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    SizedBox(height: 4),
+                    /// 🔷 STATS GRID
+                    GridView.count(
+                      crossAxisCount: 2,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      childAspectRatio: 1.8,
+                      children: [
 
-                    Text(
-                      uniqueCode,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
+                        _buildStatCard(
+                          "Total Subscriptions",
+                          "125",
+                          Colors.blue.shade400,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const SubscriptionScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                        _buildStatCard(
+                            "Monthly Earnings", "8", Colors.blue.shade700),
+
+                        _buildStatCard("Users", "45,600",
+                            Colors.orange),
+
+                        _buildStatCard("Agents", "20,300",
+                            Colors.blue.shade600),
+
+                        _buildStatCard("Notifications", "20,300",
+                            Colors.lightGreen),
+
+                        _buildStatCard("Wallet Balance", "20,300",
+                            Colors.deepOrange),
+                      ],
                     ),
                   ],
-                )
-              ],
+                ),
+              ),
             ),
 
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
 
-            const Text(
-              "Progress",
-              style: TextStyle(
+            /// 🔷 UPCOMING CAMPS
+            _sectionTitle("Upcoming Camps"),
+
+            _campCard("12", "Pagolu Health Camp", "12 Apr 2026", "56"),
+            _campCard("25", "Machilipatnam Camp", "25 Mar 2026", "30"),
+
+            const SizedBox(height: 20),
+
+            /// 🔷 RECENT PAYMENTS
+            _sectionTitle("Recent Payments"),
+
+            _paymentTile("Ajay Kumar", "₹2,358", "Completed"),
+            _paymentTile("Sita Rao", "₹1,414", "Pending"),
+
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+
+      /// ================= BOTTOM NAV =================
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: currentIndex,
+        onTap: (i) {
+          setState(() {
+            currentIndex = i;
+          });
+        },
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
+        items: const [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.assignment), label: "Tasks"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.person), label: "Users"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.person), label: "Agents"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.person), label: "Profile"),
+        ],
+      ),
+    );
+  }
+
+  /// ================= STAT CARD =================
+  Widget _buildStatCard(
+      String title,
+      String value,
+      Color color, {
+        VoidCallback? onTap,
+      }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold,),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              value,
+              style: const TextStyle(
+                color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            /// PROGRESS BAR
-            Container(
-              height: 45,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            /// MENU ROW
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 6,
-                    spreadRadius: 2,
-                  )
-                ],
-              ),
-
-              child: Builder(
-                builder: (_) {
-                  List<Widget> menuItems = [
-
-                    /// 🔹 USERS
-                    _buildMenuItem(
-                      icon: Icons.person_add,
-                      label: "Users",
-                      color: Colors.black,
-                      onTap: () {
-                        Navigator.pushNamed(context, RoutesName.userScreen);
-                      },
-                    ),
-
-                    /// 🔹 AGENTS (Only Partner)
-                    if (type == "Partner")
-                      _buildMenuItem(
-                        icon: Icons.person,
-                        label: "Agents",
-                       color: Colors.black,
-                        onTap: () {
-                          Navigator.pushNamed(context, RoutesName.agentScreen);
-                        },
-                      ),
-                  ];
-
-                  return Row(
-                    mainAxisAlignment: menuItems.length == 1
-                        ? MainAxisAlignment.center
-                        : MainAxisAlignment.spaceAround,
-                    children: menuItems,
-                  );
-                },
               ),
             ),
           ],
         ),
       ),
-
-      // /// ================= BOTTOM NAV =================
-      // bottomNavigationBar: BottomNavigationBar(
-      //
-      //   currentIndex: currentIndex,
-      //
-      //   onTap: (index) {
-      //     setState(() {
-      //       currentIndex = index;
-      //     });
-      //   },
-      //
-      //   selectedItemColor: Colors.blue,
-      //   unselectedItemColor: Colors.grey,
-      //
-      //   items: const [
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.home),
-      //       label: "Home",
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.assignment),
-      //       label: "Tasks",
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: Icon(Icons.person),
-      //       label: "Profile",
-      //     ),
-      //   ],
-      // ),
     );
   }
 
-  /// ================= MENU ITEM =================
-  Widget _buildMenuItem({
-    required IconData icon,
-    required String label,
-    required Color color,
-    VoidCallback? onTap,
-  }) {
-    final isDisabled = onTap == null;
+  /// ================= SECTION TITLE =================
+  Widget _sectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        children: [
+          Text(title,
+              style:
+              const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Spacer(),
+          const Icon(Icons.arrow_forward_ios, size: 14)
+        ],
+      ),
+    );
+  }
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Opacity(
-        opacity: isDisabled ? 0.5 : 1,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CircleAvatar(
-              radius: 24,
-              backgroundColor: color,
-              child: Icon(
-                icon,
-                color: Colors.white,
-                size: 22,
-              ),
+  /// ================= CAMP CARD =================
+  Widget _campCard(
+      String day, String title, String date, String registrations) {
+    return Container(
+      margin: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 5)],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.circular(10),
             ),
-            const SizedBox(height: 6),
-            Text(
-              label,
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w500,
-              ),
+            child: Column(
+              children: [
+                Text(day,
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
+                const Text("DEC",
+                    style: TextStyle(color: Colors.white70, fontSize: 10)),
+              ],
             ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(date, style: const TextStyle(color: Colors.grey)),
+              ],
+            ),
+          ),
+          Text("$registrations Registrations",
+              style: const TextStyle(color: Colors.blue)),
+        ],
+      ),
+    );
+  }
+
+  /// ================= PAYMENT TILE =================
+  Widget _paymentTile(String name, String amount, String status) {
+    return ListTile(
+      leading: const CircleAvatar(
+        backgroundImage: AssetImage("assets/icon.png"),
+      ),
+      title: Text(name),
+      subtitle: const Text("11:23 AM"),
+      trailing: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(amount,
+              style: const TextStyle(fontWeight: FontWeight.bold)),
+          Container(
+            padding:
+            const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: status == "Completed"
+                  ? Colors.orange
+                  : Colors.green,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(status,
+                style: const TextStyle(
+                    color: Colors.white, fontSize: 10)),
+          )
+        ],
       ),
     );
   }
