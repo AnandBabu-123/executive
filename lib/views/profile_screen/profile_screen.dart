@@ -93,7 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.blue,
         iconTheme: const IconThemeData(
-          color: Colors.white, // ✅ FORCE WHITE ICON
+          color: Colors.white,
         ),
         leading: widget.showBackButton
             ? IconButton(
@@ -223,7 +223,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 CircleAvatar(
                   radius: 60,
-                  backgroundColor: Colors.grey.shade300,
+                  backgroundColor: Colors.grey.shade100,
                   backgroundImage: selectedImage != null
                       ? FileImage(selectedImage!) as ImageProvider
                       : (profile != null && profile.image != null
@@ -273,7 +273,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               : null,
           decoration: InputDecoration(
             filled: true,
-            fillColor: isEditable ? Colors.grey.shade100 : Colors.grey.shade300,
+            fillColor: isEditable ? Colors.grey.shade100 : Colors.grey.shade100,
             contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 14),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
           ),
@@ -338,7 +338,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       decoration: InputDecoration(
         hintText: hint,
         filled: true,
-        fillColor: enabled ? Colors.white : Colors.grey.shade300,
+        fillColor: enabled ? Colors.white : Colors.grey.shade100,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );

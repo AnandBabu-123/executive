@@ -244,52 +244,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// ================= CAMP CARD =================
-  Widget _campCard(
-      String day, String title, String date, String registrations) {
-    return Container(
-      margin: const EdgeInsets.all(12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 5)],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Column(
-              children: [
-                Text(day,
-                    style: const TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold)),
-                const Text("DEC",
-                    style: TextStyle(color: Colors.white70, fontSize: 10)),
-              ],
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title,
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text(date, style: const TextStyle(color: Colors.grey)),
-              ],
-            ),
-          ),
-          Text("$registrations Registrations",
-              style: const TextStyle(color: Colors.blue)),
-        ],
-      ),
-    );
-  }
+
 
   /// ================= PAYMENT TILE =================
   Widget _paymentTile(
