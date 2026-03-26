@@ -11,7 +11,8 @@ import '../../bloc/profile_bloc/profile_state.dart';
 
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final bool showBackButton;
+  const ProfileScreen({super.key,this.showBackButton = false});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -91,10 +92,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: AppColors.whiteColor,
       appBar: AppBar(
         backgroundColor: AppColors.blue,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+        iconTheme: const IconThemeData(
+          color: Colors.white, // ✅ FORCE WHITE ICON
         ),
+        leading: widget.showBackButton
+            ? IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        )
+            : null,
         title: const Text(
           "Profile",
           style: TextStyle(fontSize: 19, color: Colors.white, fontWeight: FontWeight.w500),

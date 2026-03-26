@@ -5,10 +5,6 @@ import 'package:flutter_svg/svg.dart';
 import '../../config/session_manager/session_manager.dart';
 import '../subscription_screen/subscription_screen.dart';
 import 'app_drawer.dart';
-
-
-
-import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,23 +17,38 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int currentIndex = 0;
 
-  String name = "Uday";
+  String name = "";
+  String type ="";
 
+  @override void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final userName = await SessionManager.getName();
+    final userType = await SessionManager.getType();
+
+    setState(() {
+      name = userName ?? "";
+      type = userType ?? "";
+
+    }); }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const Drawer(), // your drawer
 
+     drawer: AppDrawer(rootContext: context),
       /// ================= APP BAR =================
       appBar: AppBar(
         backgroundColor: AppColors.blue,
         elevation: 0,
 
-        leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, color: Colors.white),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-          ),
+        leading: Builder( builder: (context)
+        { return IconButton( icon: const Icon(Icons.menu, color: Colors.white),
+          onPressed: () { Scaffold.of(context).openDrawer();
+          },
+        ); },
         ),
 
         title: SvgPicture.asset(
@@ -46,6 +57,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
 
         actions: const [
+          Padding(
+            padding:  EdgeInsets.only(right: 16),
+            child: CircleAvatar( backgroundColor: Colors.white, radius: 18,
+              child:  Icon( Icons.notifications, color: AppColors.blue, size: 20,
+              ), ), ),
           Padding(
             padding: EdgeInsets.only(right: 12),
             child: CircleAvatar(
@@ -92,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       "Welcome, $name!",
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 20,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -126,16 +142,29 @@ class _HomeScreenState extends State<HomeScreen> {
                             "Monthly Earnings", "8", Colors.blue.shade700),
 
                         _buildStatCard("Users", "45,600",
-                            Colors.orange),
+                            Colors.orange,
+                          onTap: () {
+                            Navigator.pushNamed(context, RoutesName.userScreen);
+                          },),
 
-                        _buildStatCard("Agents", "20,300",
-                            Colors.blue.shade600),
+                        /// ✅ SHOW ONLY IF NOT AGENT
+                        if (type != "Agent")
+                          _buildStatCard(
+                            "Agents",
+                            "20,300",
+                            Colors.blue.shade600,
+                            onTap: () {
+                              Navigator.pushNamed(context, RoutesName.agentScreen);
+                            },
+                          ),
 
-                        _buildStatCard("Notifications", "20,300",
+                        _buildStatCard("Tutorials", "20",
                             Colors.lightGreen),
 
                         _buildStatCard("Wallet Balance", "20,300",
-                            Colors.deepOrange),
+                            Colors.deepOrange, onTap: () {
+                              Navigator.pushNamed(context, RoutesName.walletScreen);
+                            }),
                       ],
                     ),
                   ],
@@ -143,50 +172,21 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-            const SizedBox(height: 20),
-
-            /// 🔷 UPCOMING CAMPS
-            _sectionTitle("Upcoming Camps"),
-
-            _campCard("12", "Pagolu Health Camp", "12 Apr 2026", "56"),
-            _campCard("25", "Machilipatnam Camp", "25 Mar 2026", "30"),
 
             const SizedBox(height: 20),
 
             /// 🔷 RECENT PAYMENTS
             _sectionTitle("Recent Payments"),
 
-            _paymentTile("Ajay Kumar", "₹2,358", "Completed"),
-            _paymentTile("Sita Rao", "₹1,414", "Pending"),
+
+            _paymentTile("12", "APR", "Ajay Kumar", "₹2,358", "Completed"),
+            _paymentTile("25", "MAR", "Sita Rao", "₹1,414", "Pending"),
 
             const SizedBox(height: 20),
           ],
         ),
       ),
 
-      /// ================= BOTTOM NAV =================
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentIndex,
-        onTap: (i) {
-          setState(() {
-            currentIndex = i;
-          });
-        },
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.assignment), label: "Tasks"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.person), label: "Users"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.person), label: "Agents"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.person), label: "Profile"),
-        ],
-      ),
     );
   }
 
@@ -292,32 +292,107 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// ================= PAYMENT TILE =================
-  Widget _paymentTile(String name, String amount, String status) {
-    return ListTile(
-      leading: const CircleAvatar(
-        backgroundImage: AssetImage("assets/icon.png"),
+  Widget _paymentTile(
+      String day,
+      String month,
+      String name,
+      String amount,
+      String status,
+      ) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [
+          BoxShadow(color: Colors.black12, blurRadius: 5)
+        ],
       ),
-      title: Text(name),
-      subtitle: const Text("11:23 AM"),
-      trailing: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+      child: Row(
         children: [
 
-          Text(amount,
-              style: const TextStyle(fontWeight: FontWeight.bold)),
+          /// 🔷 LEFT DATE BOX (like camp card)
           Container(
-            padding:
-            const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: status == "Completed"
-                  ? Colors.orange
-                  : Colors.green,
-              borderRadius: BorderRadius.circular(8),
+              color: Colors.blue,
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: Text(status,
+            child: Column(
+              children: [
+                Text(
+                  day,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  month,
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 10,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(width: 10),
+
+          /// 🔷 NAME + TIME
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  "11:23 AM",
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
+
+          /// 🔷 RIGHT SIDE (Amount + Status)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                amount,
                 style: const TextStyle(
-                    color: Colors.white, fontSize: 10)),
-          )
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 5),
+
+              Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: status == "Completed"
+                      ? Colors.green
+                      : Colors.orange,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  status,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

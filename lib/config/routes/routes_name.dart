@@ -13,4 +13,7 @@ class RoutesName {
   static const String aboutScreen ="about_screen";
   static const String privacyScreen ="privacy_screen";
   static const String termsScreen ="terms_screen";
+  static const String subscriptionScreen ="subscription_screen";
+  static const String notificationScreen ="notification_screen";
+  static const String bottomNavigationScreens ="bottom_navigation_screens";
 }

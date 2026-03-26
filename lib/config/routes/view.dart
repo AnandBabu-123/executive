@@ -12,3 +12,6 @@ export '../../views/user_screen/user_screen.dart';
 export '../../views/about_screen/about_screen.dart';
 export '../../views/about_screen/terms_screen.dart';
 export '../../views/about_screen/privacy_screen.dart';
+export '../../views/subscription_screen/subscription_screen.dart';
+export '../../views/notification_screen/notification_screen.dart';
+export '../../views/bottom_navigation_screens/bottom_navigation_screens.dart';

@@ -45,6 +45,7 @@ import '../../views/about_screen/about_screen.dart';
 import '../../views/about_screen/privacy_screen.dart';
 import '../../views/about_screen/terms_screen.dart';
 import '../../views/agent_screen/agent_screen.dart';
+import '../../views/bottom_navigation_screens/bottom_navigation_screens.dart';
 import '../../views/user_screen/user_screen.dart';
 import '../session_manager/session_manager.dart';
 
@@ -317,9 +318,16 @@ class Routes {
         );
 
     /// ================= HOME =================
+
+
+      // case RoutesName.homeScreen:
+      //   return MaterialPageRoute(
+      //     builder: (_) => const HomeScreen(),
+      //   );
+
       case RoutesName.homeScreen:
         return MaterialPageRoute(
-          builder: (_) => const HomeScreen(),
+          builder: (_) => const BottomNavigationScreens(),
         );
 
     /// ================= DRAWER =================

@@ -12,7 +12,8 @@ import '../../model/agent_model/agent_model.dart';
 
 
 class AgentScreen extends StatefulWidget {
-  const AgentScreen({super.key});
+  final bool showBackButton;
+  const AgentScreen({super.key,this.showBackButton = false});
 
   @override
   State<AgentScreen> createState() => _AgentScreenState();
@@ -78,10 +79,15 @@ class _AgentScreenState extends State<AgentScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.blue,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+        iconTheme: const IconThemeData(
+          color: Colors.white, // ✅ FORCE WHITE ICON
         ),
+        leading: widget.showBackButton
+            ? IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        )
+            : null,
         title: const Text(
           "Agent List",
           style: TextStyle(

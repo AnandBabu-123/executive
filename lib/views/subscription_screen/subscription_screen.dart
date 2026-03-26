@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 
 class SubscriptionScreen extends StatefulWidget {
-  const SubscriptionScreen({super.key});
+  final bool showBackButton;
+  const SubscriptionScreen({super.key,this.showBackButton = false});
 
   @override
   State<SubscriptionScreen> createState() => _SubscriptionScreenState();
@@ -55,10 +56,15 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       /// 🔷 APP BAR
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+        iconTheme: const IconThemeData(
+          color: Colors.white, // ✅ FORCE WHITE ICON
         ),
+        leading: widget.showBackButton
+            ? IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        )
+            : null,
         title: const Text(
           "Subscriptions",
           style: TextStyle(color: Colors.white),

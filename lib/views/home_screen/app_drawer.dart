@@ -57,7 +57,7 @@ class _AppDrawerState extends State<AppDrawer> {
 
         /// 🔹 USER NAME (WITH SPACE FROM AVATAR)
         accountName: Padding(
-          padding: const EdgeInsets.only(top: 8), // ✅ spacing fix
+          padding: const EdgeInsets.only(top: 8),
           child: Text(
             name.isNotEmpty ? name : "User Name",
             style: const TextStyle(
@@ -71,40 +71,55 @@ class _AppDrawerState extends State<AppDrawer> {
         /// 🔹 REFERRAL + SHARE
         accountEmail: Padding(
           padding: const EdgeInsets.only(top: 4),
-          child: Row(
+          child: Column(
+           crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Text(
-                  "Referral Code : $uniqueCode",
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      "Referral Code : $uniqueCode",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  overflow: TextOverflow.ellipsis,
-                ),
+
+                  /// 🔹 SHARE ICON
+                  GestureDetector(
+                    onTap: () {
+                      final referralLink =
+                          "https://medconnect.org.in/bharosa/registration?referral_id=$uniqueCode";
+
+                      Share.share(
+                        "Join using my referral link:\n$referralLink",
+                      );
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.only(right: 14),
+                      child: Icon(
+                        Icons.share,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-
-              /// 🔹 SHARE ICON
-              GestureDetector(
-                onTap: () {
-                  final referralLink =
-                      "https://medconnect.org.in/bharosa/registration?referral_id=$uniqueCode";
-
-                  Share.share(
-                    "Join using my referral link:\n$referralLink",
-                  );
-                },
-                child: const Padding(
-                  padding: EdgeInsets.only(right: 14),
-                  child: Icon(
-                    Icons.share,
-                    color: Colors.white,
-                    size: 18,
-                  ),
+              SizedBox(height: 5,),
+              Text(
+                 type,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14 ,
                 ),
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
+
         ),
 
         /// 🔹 PROFILE CIRCLE

@@ -45,48 +45,20 @@ class _SplashScreenState extends State<SplashScreen>
     if (!mounted) return;
 
     if (token != null && token.isNotEmpty) {
-      /// ✅ Already logged in
+
       Navigator.pushReplacementNamed(
         context,
         RoutesName.homeScreen,
       );
     } else {
-      /// ❌ Not logged in
+
       Navigator.pushReplacementNamed(
         context,
         RoutesName.loginScreen,
       );
     }
   }
-  // void initState() {
-  //   super.initState();
-  //
-  //   /// Animation Controller (4 seconds)
-  //   _controller = AnimationController(
-  //     vsync: this,
-  //     duration: const Duration(seconds: 2),
-  //   );
-  //
-  //   /// Scale Animation (zoom in & out)
-  //   _animation = Tween<double>(begin: 0.5, end: 1.2).animate(
-  //     CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-  //   );
-  //
-  //   /// Repeat animation
-  //   _controller.repeat(reverse: true);
-  //
-  //   /// Navigate after 4 seconds
-  //   Future.delayed(const Duration(seconds: 4), () {
-  //
-  //     if (!mounted) return;
-  //
-  //     Navigator.pushReplacementNamed(
-  //       context,
-  //       RoutesName.loginScreen,
-  //     );
-  //
-  //   });
-  // }
+
 
   @override
   void dispose() {

@@ -13,7 +13,9 @@ import '../../repository/user_repo/blood_groop_repository.dart';
 import '../../repository/user_repo/category_repository.dart';
 
 class UserScreen extends StatefulWidget {
-  const UserScreen({super.key});
+  final bool showBackButton;
+
+  const UserScreen({super.key, this.showBackButton = false});
 
   @override
   State<UserScreen> createState() => _UserScreenState();
@@ -74,8 +76,24 @@ class _UserScreenState extends State<UserScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.blue,
-        title: const Text("User List",
-            style: TextStyle(color: Colors.white)),
+        iconTheme: const IconThemeData(
+          color: Colors.white, // ✅ FORCE WHITE ICON
+        ),
+        leading: widget.showBackButton
+            ? IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        )
+            : null,
+        title: const Text(
+          "Users List",
+          style: TextStyle(
+            fontSize: 19,
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+       centerTitle: true,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(
@@ -148,10 +166,10 @@ class _UserScreenState extends State<UserScreen> {
                   child: Row(
                     children: [
                       CircleAvatar(
-                        radius: 25,
+                        radius: 30,
                         backgroundImage: NetworkImage(user.image),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 18),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,7 +177,9 @@ class _UserScreenState extends State<UserScreen> {
                             Text(user.name,
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold)),
+                            SizedBox(height: 2,),
                             Text(user.email),
+                            SizedBox(height: 2,),
                             Text(user.mobile),
                           ],
                         ),
@@ -175,10 +195,16 @@ class _UserScreenState extends State<UserScreen> {
         },
       ),
 
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: _openAddUserBottomSheet,
-        child: const Icon(Icons.add),
+        label: const Text(
+          "Add User",
+          style: TextStyle(color: AppColors.whiteColor),
+        ),
+        backgroundColor: AppColors.blue,
       ),
+
+
     );
   }
 }
@@ -289,9 +315,12 @@ class _AddUserBottomSheetState extends State<AddUserBottomSheet> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const Text("Add User",
-                  style: TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold)),
+              Align(
+                alignment: Alignment.topLeft,
+                child: const Text("Add User",
+                    style: TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold)),
+              ),
 
               const SizedBox(height: 20),
 
@@ -417,9 +446,58 @@ class _AddUserBottomSheetState extends State<AddUserBottomSheet> {
                 builder: (context, state) {
                   final loading = state is UserAdding;
 
+                  // return SizedBox(
+                  //   width: double.infinity,
+                  //   child: ElevatedButton(
+                  //     onPressed: loading
+                  //         ? null
+                  //         : () async {
+                  //       if (name.text.isEmpty ||
+                  //           email.text.isEmpty ||
+                  //           mobile.text.isEmpty ||
+                  //           gender == null ||
+                  //           dob.text.isEmpty ||
+                  //           selectedBloodGroupId == null ||
+                  //           selectedCategoryId == null) {
+                  //         _showButtonMessage("Please fill all fields");
+                  //         return;
+                  //       }
+                  //
+                  //       final userId =
+                  //       await SessionManager.getUserId();
+                  //
+                  //       widget.userBloc.add(AddUser(
+                  //         name: name.text,
+                  //         email: email.text,
+                  //         mobile: mobile.text,
+                  //         gender: gender!,
+                  //         dob: dob.text,
+                  //         bloodGroupId: selectedBloodGroupId!,
+                  //         coverageCategoryId: selectedCategoryId!,
+                  //         userId: userId!,
+                  //         image: pickedImage != null
+                  //             ? File(pickedImage!.path)
+                  //             : null,
+                  //       ));
+                  //     },
+                  //     child: loading
+                  //         ? const CircularProgressIndicator(
+                  //         color: Colors.white)
+                  //         : const Text("Save"),
+                  //   ),
+                  // );
+
                   return SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.blue, // ✅ blue background
+                        foregroundColor: Colors.white, // ✅ text color white
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10), // ✅ radius 10
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14), // optional height
+                      ),
                       onPressed: loading
                           ? null
                           : () async {
@@ -434,8 +512,7 @@ class _AddUserBottomSheetState extends State<AddUserBottomSheet> {
                           return;
                         }
 
-                        final userId =
-                        await SessionManager.getUserId();
+                        final userId = await SessionManager.getUserId();
 
                         widget.userBloc.add(AddUser(
                           name: name.text,
@@ -452,9 +529,21 @@ class _AddUserBottomSheetState extends State<AddUserBottomSheet> {
                         ));
                       },
                       child: loading
-                          ? const CircularProgressIndicator(
-                          color: Colors.white)
-                          : const Text("Save"),
+                          ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                          : const Text(
+                        "Save",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   );
                 },
