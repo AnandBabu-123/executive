@@ -1,7 +1,11 @@
 import 'package:executive/config/colors/app_colors.dart';
 import 'package:executive/config/routes/routes_name.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import '../../bloc/home_bloc/home_bloc.dart';
+import '../../bloc/home_bloc/home_state.dart';
+import '../../config/routes/app_url.dart';
 import '../../config/session_manager/session_manager.dart';
 import '../subscription_screen/subscription_screen.dart';
 import 'app_drawer.dart';
@@ -24,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String name = "";
   String type ="";
+  String? profileImage;
 
   @override void initState() {
     super.initState();
@@ -51,12 +56,15 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: AppColors.blue,
         elevation: 0,
 
-        leading: Builder( builder: (context)
-        { return IconButton( icon: const Icon(Icons.menu, color: Colors.white),
-          onPressed: () {
-            widget.scaffoldKey.currentState?.openDrawer();
+        leading: Builder(
+          builder: (context) {
+            return IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white),
+              onPressed: () {
+                widget.scaffoldKey.currentState?.openDrawer();
+              },
+            );
           },
-        ); },
         ),
 
         title: SvgPicture.asset(
@@ -64,138 +72,185 @@ class _HomeScreenState extends State<HomeScreen> {
           height: 28,
         ),
 
-        actions: const [
-          Padding(
-            padding:  EdgeInsets.only(right: 16),
-            child: CircleAvatar( backgroundColor: Colors.white, radius: 18,
-              child:  Icon( Icons.notifications, color: AppColors.blue, size: 20,
-              ), ), ),
-          Padding(
-            padding: EdgeInsets.only(right: 12),
+        actions: [
+          const Padding(
+            padding: EdgeInsets.only(right: 16),
             child: CircleAvatar(
-              backgroundImage: AssetImage("assets/userLogo.png",),
+              backgroundColor: Colors.white,
+              radius: 18,
+              child: Icon(
+                Icons.notifications,
+                color: AppColors.blue,
+                size: 20,
+              ),
             ),
-          )
+          ),
+
+          /// 🔥 PROFILE IMAGE FROM API
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: CircleAvatar(
+              radius: 18,
+              backgroundColor: Colors.white,
+
+              /// ✅ IMAGE LOGIC
+              backgroundImage: (profileImage != null &&
+                  profileImage!.isNotEmpty)
+                  ? NetworkImage(profileImage!)
+                  : const AssetImage("assets/userLogo.png")
+              as ImageProvider,
+
+              /// ✅ OPTIONAL: fallback if network fails
+              onBackgroundImageError: (_, __) {},
+            ),
+          ),
         ],
       ),
 
       /// ================= BODY =================
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
+      body: BlocBuilder<HomeBloc, HomeState>(
+        builder: (context, state) {
 
-            SizedBox(height: 20,),
+          if (state is HomeLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            /// 🔷 TOP GRADIENT HEADER
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.blue.shade900,
-                      Colors.blue.shade500,
-                    ],
-                  ),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(25),
-                    topRight: Radius.circular(25),
-                    bottomLeft: Radius.circular(25),
-                    bottomRight: Radius.circular(25),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+          if (state is HomeError) {
+            return Center(child: Text(state.message));
+          }
 
-                    const SizedBox(height: 10),
+          if (state is HomeLoaded) {
 
-                    Text(
-                      "Welcome, $name!",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+            final data = state.data;
 
-                    const SizedBox(height: 20),
+            /// 🔥 SET PROFILE IMAGE FROM API
+            profileImage = (data.image != null && data.image!.isNotEmpty)
+                ? "${data.image}"
+                : null;
 
-                    /// 🔷 STATS GRID
-                    GridView.count(
-                      crossAxisCount: 2,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                      childAspectRatio: 1.8,
-                      children: [
+            return SingleChildScrollView(
+              child: Column(
+                children: [
 
-                        _buildStatCard(
-                          "Total Subscriptions",
-                          "125",
-                          Colors.blue.shade400,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const SubscriptionScreen(),
-                              ),
-                            );
-                          },
+                  const SizedBox(height: 20),
+
+                  /// 🔷 HEADER
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.blue.shade900,
+                            Colors.blue.shade500,
+                          ],
                         ),
-                        _buildStatCard(
-                            "Monthly Earnings", "8", Colors.blue.shade700),
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
 
-                        _buildStatCard("Users", "45,600",
-                            Colors.orange,
-                          onTap: () {
-                            Navigator.pushNamed(context, RoutesName.userScreen);
-                          },),
-
-                        /// ✅ SHOW ONLY IF NOT AGENT
-                        if (type != "Agent")
-                          _buildStatCard(
-                            "Agents",
-                            "20,300",
-                            Colors.blue.shade600,
-                            onTap: () {
-                              Navigator.pushNamed(context, RoutesName.agentScreen);
-                            },
+                          Text(
+                            "Welcome, ${data.name}",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
 
-                        _buildStatCard("Tutorials", "20",
-                            Colors.lightGreen),
+                          const SizedBox(height: 20),
 
-                        _buildStatCard("Wallet Balance", "20,300",
-                            Colors.deepOrange, onTap: () {
-                              Navigator.pushNamed(context, RoutesName.walletScreen);
-                            }),
-                      ],
+                          GridView.count(
+                            crossAxisCount: 2,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            childAspectRatio: 1.8,
+                            children: [
+
+                              _buildStatCard(
+                                "Total Subscriptions",
+                                data.totalSubscriptions.toString(),
+                                Colors.blue,
+                              ),
+
+                              _buildStatCard(
+                                "Monthly Earnings",
+                                data.monthlyEarnings,
+                                Colors.blue.shade700,
+                              ),
+
+                              _buildStatCard(
+                                "Users",
+                                data.users.toString(),
+                                Colors.orange,
+                              ),
+
+                              if (type != "Agent")
+                                _buildStatCard(
+                                  "Agents",
+                                  data.agents.toString(),
+                                  Colors.blue.shade600,
+                                ),
+
+                              _buildStatCard(
+                                "Tutorials",
+                                data.tutorials.toString(),
+                                Colors.green,
+                              ),
+
+                              _buildStatCard(
+                                "Wallet Balance",
+                                data.walletBalance,
+                                Colors.deepOrange,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  _sectionTitle("Recent Payments"),
+
+                  /// 🔥 DYNAMIC PAYMENTS
+                  ...data.recentPayments.map((e) {
+                    final date = DateTime.parse(e.date);
+
+                    return _paymentTile(
+                      date.day.toString(),
+                      _getMonth(date.month),
+                      e.name,
+                      "₹${e.amount}",
+                      "Completed",
+                    );
+                  }).toList(),
+
+                  const SizedBox(height: 20),
+                ],
               ),
-            ),
+            );
+          }
 
-
-            const SizedBox(height: 20),
-
-            /// 🔷 RECENT PAYMENTS
-            _sectionTitle("Recent Payments"),
-
-
-            _paymentTile("12", "APR", "Ajay Kumar", "₹2,358", "Completed"),
-            _paymentTile("25", "MAR", "Sita Rao", "₹1,414", "Pending"),
-
-            const SizedBox(height: 20),
-          ],
-        ),
+          return const SizedBox();
+        },
       ),
 
     );
+  }
+
+  String _getMonth(int m) {
+    const months = [
+      "JAN","FEB","MAR","APR","MAY","JUN",
+      "JUL","AUG","SEP","OCT","NOV","DEC"
+    ];
+    return months[m - 1];
   }
 
   /// ================= STAT CARD =================

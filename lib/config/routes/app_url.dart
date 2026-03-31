@@ -16,6 +16,7 @@ class AppUrl {
   static const String getUsers = "partner/users";
   static const String getBloodGroups = "partner/get-blood-groups";
   static const String getCategories = "partner/get-coverage-categories";
+  static const String homeData ="partner/dashboard";
   static const String contactUs = "partner/submit-contact-us";
   static const String about = "partner/get-pages/about_us";
   static const String terms = "partner/get-pages/terms";

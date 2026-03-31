@@ -15,6 +15,8 @@ import '../../bloc/about_bloc/about_event.dart';
 import '../../bloc/agent_bloc/agent_bloc.dart';
 import '../../bloc/bank_bloc/bank_bloc.dart';
 import '../../bloc/contact_bloc/contact_bloc.dart';
+import '../../bloc/home_bloc/home_bloc.dart';
+import '../../bloc/home_bloc/home_event.dart';
 import '../../bloc/login_bloc/login_bloc.dart';
 import '../../bloc/otp_bloc/otp_bloc.dart';
 import '../../bloc/privacy_bloc/privacy_bloc.dart';
@@ -33,6 +35,7 @@ import '../../repository/bank_details_repository/add_bank_repository.dart';
 import '../../repository/bank_details_repository/bank_details_repository.dart';
 import '../../repository/bank_details_repository/update_bank_repository.dart';
 import '../../repository/contact_repo/conatctus_repository.dart';
+import '../../repository/home_repository/home_repository.dart';
 import '../../repository/login_repo/login_repository.dart';
 import '../../repository/otp_repo/otp_repository.dart';
 import '../../repository/profile_repo/profile_repository.dart';
@@ -327,9 +330,19 @@ class Routes {
 
       case RoutesName.homeScreen:
         return MaterialPageRoute(
-          builder: (_) => const BottomNavigationScreens(),
-        );
+          builder: (_) {
+            final dioClient = DioClient(
+              dio: Dio(),
+              networkInfo: NetworkInfo(),
+              tokenProvider: () async => await SessionManager.getToken(),
+            );
 
+            return BlocProvider(
+              create: (_) => HomeBloc(HomeRepository(dioClient))..add(FetchHomeData()),
+              child: const BottomNavigationScreens(),
+            );
+          },
+        );
     /// ================= DRAWER =================
 
     /// ================= DEFAULT =================

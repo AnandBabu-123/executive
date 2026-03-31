@@ -36,11 +36,14 @@ class _UserScreenState extends State<UserScreen> {
     userBloc.add(FetchUsers());
 
     scrollController.addListener(() {
-      if (scrollController.position.pixels ==
-          scrollController.position.maxScrollExtent) {
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent - 100) {
+
         final state = userBloc.state;
+
         if (state is UserLoaded &&
             state.currentPage <= state.lastPage) {
+
           userBloc.add(FetchUsers());
         }
       }
@@ -116,17 +119,31 @@ class _UserScreenState extends State<UserScreen> {
       ),
 
       body: BlocConsumer<UserBloc, UserState>(
-        listenWhen: (prev, curr) => curr is UserActionState,
+        listenWhen: (prev, curr) =>
+        curr is UserLoaded || curr is UserActionState,
         buildWhen: (prev, curr) => curr is! UserActionState,
 
         listener: (context, state) {
+          if (state is UserLoaded) {
+            allUsers = List.from(state.users);
+
+            /// 🔥 IMPORTANT FIX
+            if (searchController.text.isEmpty) {
+              displayedUsers = List.from(allUsers);
+            } else {
+              _filterUsers(searchController.text);
+            }
+
+            setState(() {});
+          }
+
           if (state is UserAdded) {
             userBloc.add(FetchUsers(reset: true));
           }
         },
 
         builder: (context, state) {
-          if (state is UserLoading) {
+          if (state is UserLoading && allUsers.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
 
@@ -134,66 +151,72 @@ class _UserScreenState extends State<UserScreen> {
             return const Center(child: Text("No Data Found"));
           }
 
-          if (state is UserLoaded) {
-            allUsers = state.users;
-            displayedUsers = List.from(allUsers);
-
-            if (displayedUsers.isEmpty) {
-              return const Center(child: Text("No Users Found"));
-            }
-
-            return ListView.builder(
-              controller: scrollController,
-              padding: const EdgeInsets.all(16),
-              itemCount: displayedUsers.length,
-              itemBuilder: (_, index) {
-                final user = displayedUsers[index];
-
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.shade200,
-                        blurRadius: 5,
-                        offset: const Offset(0, 2),
-                      )
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 30,
-                        backgroundImage: NetworkImage(user.image),
-                      ),
-                      const SizedBox(width: 18),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(user.name,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold)),
-                            SizedBox(height: 2,),
-                            Text(user.email),
-                            SizedBox(height: 2,),
-                            Text(user.mobile),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            );
+          if (displayedUsers.isEmpty) {
+            return const Center(child: Text("No Users Found"));
           }
 
-          return const SizedBox();
+          return ListView.builder(
+            controller: scrollController,
+            padding: const EdgeInsets.all(16),
+
+            itemCount: displayedUsers.length +
+                (state is UserLoading ? 1 : 0),
+
+            itemBuilder: (_, index) {
+
+              /// 🔥 LOADER AT BOTTOM
+              if (index == displayedUsers.length) {
+                return const Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+
+              final user = displayedUsers[index];
+
+              return Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.shade200,
+                      blurRadius: 5,
+                      offset: const Offset(0, 2),
+                    )
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 30,
+                      backgroundImage: NetworkImage(user.image),
+                    ),
+                    const SizedBox(width: 18),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(user.name,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 2),
+                          Text(user.email),
+                          const SizedBox(height: 2),
+                          Text(user.mobile),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
         },
       ),
+
 
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openAddUserBottomSheet,
