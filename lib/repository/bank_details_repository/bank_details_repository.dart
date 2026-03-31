@@ -15,7 +15,7 @@ class BankDetailsRepository {
       List data = response["result"];
       return data.map((e) => BankModel.fromJson(e)).toList();
     } else {
-      throw Exception(response["message"]);
+      throw response["message"];
     }
   }
 }

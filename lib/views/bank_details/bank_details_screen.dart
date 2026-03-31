@@ -16,7 +16,7 @@ class BankScreen extends StatefulWidget {
 }
 
 class _BankScreenState extends State<BankScreen> {
-  List<BankModel> _banks = []; // Keep last fetched banks
+  List<BankModel> _banks = [];
 
   @override
   void initState() {
@@ -161,8 +161,8 @@ class _BankScreenState extends State<BankScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (bottomSheetContext) {
-        String? _msg;
-        Color _msgColor = Colors.grey;
+        String? msg;
+        Color msgColor = Colors.grey;
 
         return StatefulBuilder(
           builder: (context, setState) {
@@ -171,13 +171,13 @@ class _BankScreenState extends State<BankScreen> {
               listener: (context, state) {
                 if (state is BankError) {
                   setState(() {
-                    _msg = state.message;
-                    _msgColor = Colors.red;
+                    msg = state.message;
+                    msgColor = Colors.red;
                   });
                 } else if (state is BankSuccess) {
                   setState(() {
-                    _msg = "Bank Details Saved";
-                    _msgColor = Colors.green;
+                    msg = "Bank Details Saved";
+                    msgColor = Colors.green;
                   });
 
                   Future.delayed(const Duration(seconds: 1), () {
@@ -200,16 +200,16 @@ class _BankScreenState extends State<BankScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (_msg != null)
+                            if (msg != null)
                               Container(
                                 width: double.infinity,
                                 margin: const EdgeInsets.only(bottom: 16),
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
-                                  color: _msgColor,
+                                  color: msgColor,
                                   borderRadius: BorderRadius.circular(10),
                                 ),
-                                child: Text(_msg!, style: const TextStyle(color: Colors.white)),
+                                child: Text(msg!, style: const TextStyle(color: Colors.white)),
                               ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -243,8 +243,8 @@ class _BankScreenState extends State<BankScreen> {
                                 onPressed: () {
                                   if (name.text.isEmpty || accNo.text.isEmpty || ifsc.text.isEmpty) {
                                     setState(() {
-                                      _msg = "Please fill all required fields";
-                                      _msgColor = Colors.red;
+                                      msg = "Please fill all required fields";
+                                      msgColor = Colors.red;
                                     });
                                     return;
                                   }

@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:executive/config/colors/app_colors.dart';
 import 'package:executive/model/profile_model/profile_model.dart';
 import 'package:flutter/material.dart';

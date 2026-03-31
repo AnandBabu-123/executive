@@ -56,18 +56,28 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       /// 🔷 APP BAR
       appBar: AppBar(
         backgroundColor: Colors.blue,
+
         iconTheme: const IconThemeData(
-          color: Colors.white, // ✅ FORCE WHITE ICON
+          color: Colors.white,
         ),
+
         leading: widget.showBackButton
             ? IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         )
             : null,
+
+        /// ✅ CENTER TITLE
+        centerTitle: true,
+
         title: const Text(
           "Subscriptions",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            fontSize: 19,
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ),
 

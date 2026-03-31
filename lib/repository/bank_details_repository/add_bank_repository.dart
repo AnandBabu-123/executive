@@ -1,5 +1,6 @@
 
 import '../../config/routes/app_url.dart';
+import '../../network/dio_network/api_exception.dart';
 import '../../network/dio_network/dio_client.dart';
 
 class AddBankRepository {
@@ -14,7 +15,7 @@ class AddBankRepository {
     );
 
     if (response["status"] != 200) {
-      throw Exception(response["message"]);
+      throw ApiException(response["message"] ?? "Failed to add bank");
     }
   }
 }

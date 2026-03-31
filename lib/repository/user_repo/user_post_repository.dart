@@ -35,6 +35,6 @@ class UserPostRepository {
 
     final response = await dioClient.post(AppUrl.getUsers, data: formData);
 
-    if (response["status"] != 200) throw Exception(response["message"]);
+    if (response["status"] != 200) throw response["message"];
   }
 }

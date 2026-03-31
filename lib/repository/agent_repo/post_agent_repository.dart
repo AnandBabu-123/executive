@@ -23,7 +23,7 @@ class PostAgentRepository {
     );
 
     if (response.data["status"] != 200) {
-      throw Exception(response.data["message"]);
+      throw response.data["message"];
     }
   }
 }

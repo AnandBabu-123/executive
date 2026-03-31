@@ -23,7 +23,7 @@ class WalletWithdrawRepository {
     if (response["status"] == 200) {
       return WalletWithdrawResponse.fromJson(response);
     } else {
-      throw Exception(response["message"]);
+      throw response["message"];
     }
   }
 }

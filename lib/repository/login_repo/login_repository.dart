@@ -28,7 +28,7 @@ class LoginRepository {
     if (response["status"] == 200) {
       return LoginResponseModel.fromJson(response);
     } else {
-      throw Exception(response["message"]);
+      throw response["message"];
     }
   }
 }

@@ -79,15 +79,21 @@ class _AgentScreenState extends State<AgentScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.blue,
+
         iconTheme: const IconThemeData(
-          color: Colors.white, // ✅ FORCE WHITE ICON
+          color: Colors.white,
         ),
+
         leading: widget.showBackButton
             ? IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         )
             : null,
+
+        /// ✅ THIS IS REQUIRED
+        centerTitle: true,
+
         title: const Text(
           "Agent List",
           style: TextStyle(

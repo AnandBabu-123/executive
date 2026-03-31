@@ -18,7 +18,7 @@ class UpdateBankRepository {
     print("🔹 UPDATE BANK RESPONSE");
     print(response);
     if (response["status"] != 200) {
-      throw Exception(response["message"]);
+      throw response["message"];
     }
   }
 }

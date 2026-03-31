@@ -29,7 +29,7 @@ class OtpRepository {
     if (response["status"] == 200) {
       return OtpVerifyResponse.fromJson(response);
     } else {
-      throw Exception(response["message"]);
+      throw response["message"];
     }
   }
 }

@@ -13,6 +13,7 @@ import '../../repository/profile_repo/update_profole_repository.dart';
 import '../../repository/user_repo/user_post_repository.dart';
 import '../../repository/user_repo/user_repository.dart';
 import '../agent_screen/agent_screen.dart';
+import '../home_screen/app_drawer.dart';
 import '../home_screen/home_screen.dart';
 import '../profile_screen/profile_screen.dart';
 import '../subscription_screen/subscription_screen.dart';
@@ -30,6 +31,7 @@ class BottomNavigationScreens extends StatefulWidget {
 
 class _BottomNavigationScreensState
     extends State<BottomNavigationScreens> {
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   int currentIndex = 0;
   String userType = "";
@@ -78,7 +80,8 @@ class _BottomNavigationScreensState
   List<Widget> getPages() {
     List<Widget> pages = [
 
-      const HomeScreen(),
+      /// ✅ PASS CORRECT KEY
+      HomeScreen(scaffoldKey: scaffoldKey),
 
       const SubscriptionScreen(),
 
@@ -135,8 +138,12 @@ class _BottomNavigationScreensState
     }
 
     return Scaffold(
+      // drawer: AppDrawer(rootContext: context),
+      // /// 🔷 BODY
+      // body: pages[currentIndex],
 
-      /// 🔷 BODY
+      key: scaffoldKey,   // 🔥 IMPORTANT
+      drawer: AppDrawer(rootContext: context),
       body: pages[currentIndex],
 
       /// 🔷 BOTTOM NAV
@@ -161,6 +168,7 @@ class _BottomNavigationScreensState
           }),
         ),
       ),
+
     );
   }
 

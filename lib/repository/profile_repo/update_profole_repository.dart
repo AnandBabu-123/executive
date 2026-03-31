@@ -37,7 +37,7 @@ class UpdateProfileRepository {
     if (response["status"] == 200) {
       return UpdateProfileResponse.fromJson(response);
     } else {
-      throw Exception(response["message"]);
+      throw response["message"];
     }
   }
 }

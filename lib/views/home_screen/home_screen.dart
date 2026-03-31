@@ -8,7 +8,12 @@ import 'app_drawer.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final GlobalKey<ScaffoldState> scaffoldKey;
+
+  const HomeScreen({
+    super.key,
+    required this.scaffoldKey,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -39,6 +44,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
 
      drawer: AppDrawer(rootContext: context),
+
+
       /// ================= APP BAR =================
       appBar: AppBar(
         backgroundColor: AppColors.blue,
@@ -46,7 +53,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
         leading: Builder( builder: (context)
         { return IconButton( icon: const Icon(Icons.menu, color: Colors.white),
-          onPressed: () { Scaffold.of(context).openDrawer();
+          onPressed: () {
+            widget.scaffoldKey.currentState?.openDrawer();
           },
         ); },
         ),

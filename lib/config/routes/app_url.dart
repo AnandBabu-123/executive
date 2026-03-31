@@ -1,6 +1,6 @@
 class AppUrl {
 
-  static const String baseUrl = "https://medrayder.dashboardplus.in/api/";
+  static const String baseUrl = "https://app.medconnect.org.in/api/";
   static const String imageBaseUrl = "https://medconnect.org.in/bharosa/";
 
   /// login
