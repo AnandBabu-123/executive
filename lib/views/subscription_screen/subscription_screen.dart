@@ -25,6 +25,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   List<Subscription> allList = [];
 
   late SubscriptionBloc bloc;
+
   String? profileImage;
 
   @override
