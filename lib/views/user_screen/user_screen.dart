@@ -14,8 +14,9 @@ import '../../repository/user_repo/category_repository.dart';
 
 class UserScreen extends StatefulWidget {
   final bool showBackButton;
+  final GlobalKey<ScaffoldState> scaffoldKey;
 
-  const UserScreen({super.key, this.showBackButton = false});
+  const UserScreen({super.key, this.showBackButton = false,required this.scaffoldKey});
 
   @override
   State<UserScreen> createState() => _UserScreenState();
@@ -28,10 +29,12 @@ class _UserScreenState extends State<UserScreen> {
 
   List<User> allUsers = [];
   List<User> displayedUsers = [];
+  String? profileImage;
 
   @override
   void initState() {
     super.initState();
+    _loadImage();
     userBloc = context.read<UserBloc>();
     userBloc.add(FetchUsers());
 
@@ -47,6 +50,13 @@ class _UserScreenState extends State<UserScreen> {
           userBloc.add(FetchUsers());
         }
       }
+    });
+  }
+  Future<void> _loadImage() async {
+    final img = await SessionManager.getProfileImage();
+
+    setState(() {
+      profileImage = img;
     });
   }
 
@@ -79,15 +89,30 @@ class _UserScreenState extends State<UserScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.blue,
+        elevation: 0,
+
         iconTheme: const IconThemeData(
-          color: Colors.white, // ✅ FORCE WHITE ICON
+          color: Colors.white,
         ),
+
+        /// 🔥 LEFT SIDE
         leading: widget.showBackButton
             ? IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         )
-            : null,
+            : Builder(
+          builder: (context) {
+            return IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                widget.scaffoldKey.currentState?.openDrawer();
+              },
+            );
+          },
+        ),
+
+        /// 🔥 TITLE
         title: const Text(
           "Users List",
           style: TextStyle(
@@ -96,7 +121,41 @@ class _UserScreenState extends State<UserScreen> {
             fontWeight: FontWeight.w500,
           ),
         ),
-       centerTitle: true,
+        centerTitle: true,
+
+        /// 🔥 RIGHT SIDE (ONLY FOR DRAWER MODE)
+        actions: widget.showBackButton
+            ? null
+            : [
+          const Padding(
+            padding: EdgeInsets.only(right: 16),
+            child: CircleAvatar(
+              backgroundColor: Colors.white,
+              radius: 18,
+              child: Icon(
+                Icons.notifications,
+                color: AppColors.blue,
+                size: 20,
+              ),
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: CircleAvatar(
+              radius: 18,
+              backgroundColor: Colors.white,
+              backgroundImage: (profileImage != null &&
+                  profileImage!.isNotEmpty)
+                  ? NetworkImage(profileImage!)
+                  : const AssetImage("assets/userLogo.png")
+              as ImageProvider,
+              onBackgroundImageError: (_, __) {},
+            ),
+          ),
+        ],
+
+        /// 🔥 SEARCH BAR
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(
@@ -110,8 +169,9 @@ class _UserScreenState extends State<UserScreen> {
                 fillColor: Colors.white,
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide.none),
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide.none,
+                ),
               ),
             ),
           ),

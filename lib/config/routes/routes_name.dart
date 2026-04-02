@@ -16,4 +16,6 @@ class RoutesName {
   static const String subscriptionScreen ="subscription_screen";
   static const String notificationScreen ="notification_screen";
   static const String bottomNavigationScreens ="bottom_navigation_screens";
+  static const String tutorialScreen ="tutorial_screen";
+
 }

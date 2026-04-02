@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:executive/bloc/subscription_bloc/subscription_bloc.dart';
+import 'package:executive/repository/subscriptions_repository/subscriptions_repository.dart';
 import 'package:flutter/material.dart';
 import '../../bloc/agent_bloc/agent_bloc.dart';
 import '../../bloc/profile_bloc/profile_bloc.dart';
@@ -62,7 +64,7 @@ class _BottomNavigationScreensState
   List<Map<String, dynamic>> getNavItems() {
     List<Map<String, dynamic>> items = [
       {"icon": Icons.home, "label": "Home"},
-      {"icon": Icons.subscriptions, "label": "Subscriptions"},
+      {"icon": Icons.subscriptions, "label": "Sales"},
       {"icon": Icons.people, "label": "Users"},
     ];
 
@@ -83,7 +85,17 @@ class _BottomNavigationScreensState
       /// ✅ PASS CORRECT KEY
       HomeScreen(scaffoldKey: scaffoldKey),
 
-      const SubscriptionScreen(),
+
+      MultiBlocProvider(
+        providers: [
+          BlocProvider<SubscriptionBloc>(
+            create: (_) => SubscriptionBloc(
+            subscriptionsRepository  : SubscriptionsRepository(dioClient),
+            ),
+          ),
+        ],
+        child:  SubscriptionScreen(scaffoldKey: scaffoldKey)),
+
 
       /// USERS
       MultiBlocProvider(
@@ -95,7 +107,7 @@ class _BottomNavigationScreensState
             ),
           ),
         ],
-        child: const UserScreen(),
+        child:  UserScreen(scaffoldKey: scaffoldKey,),
       ),
     ];
 
@@ -107,7 +119,7 @@ class _BottomNavigationScreensState
             agentRepository: AgentRepository(dioClient),
             postAgentRepository: PostAgentRepository(dioClient),
           ),
-          child: const AgentScreen(),
+          child:  AgentScreen(scaffoldKey: scaffoldKey),
         ),
       );
     }

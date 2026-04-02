@@ -5,9 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import '../../bloc/home_bloc/home_bloc.dart';
 import '../../bloc/home_bloc/home_state.dart';
-import '../../config/routes/app_url.dart';
+import '../../bloc/notification_bloc/notification_bloc.dart';
+import '../../bloc/notification_bloc/notification_state.dart';
 import '../../config/session_manager/session_manager.dart';
-import '../subscription_screen/subscription_screen.dart';
 import 'app_drawer.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -73,17 +73,50 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
 
         actions: [
-          const Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: CircleAvatar(
-              backgroundColor: Colors.white,
-              radius: 18,
-              child: Icon(
-                Icons.notifications,
-                color: AppColors.blue,
-                size: 20,
-              ),
-            ),
+          BlocBuilder<NotificationBloc, NotificationState>(
+            builder: (context, state) {
+              int unread = 0;
+
+              if (state is NotificationLoaded) {
+                unread = state.unreadCount;
+              }
+
+              return Stack(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.notifications, color: Colors.white),
+                    onPressed: () {
+                      Navigator.pushNamed(context, RoutesName.notificationScreen);
+                    },
+                  ),
+
+                  /// 🔴 SHOW ONLY IF > 0
+                  if (unread > 0)
+                    Positioned(
+                      right: 8,
+                      top: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 18,
+                          minHeight: 18,
+                        ),
+                        child: Text(
+                          unread > 9 ? "9+" : unread.toString(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
           ),
 
           /// 🔥 PROFILE IMAGE FROM API
@@ -176,11 +209,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                 "Total Subscriptions",
                                 data.totalSubscriptions.toString(),
                                 Colors.blue,
+                                  onTap: () {
+                                    Navigator.pushNamed(context, RoutesName.subscriptionScreen);
+                                  }
                               ),
 
                               _buildStatCard(
                                 "Monthly Earnings",
-                                data.monthlyEarnings,
+                                data.monthlyEarnings.toString(),
                                 Colors.blue.shade700,
                               ),
 
@@ -188,6 +224,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 "Users",
                                 data.users.toString(),
                                 Colors.orange,
+                                  onTap: () {
+                                    Navigator.pushNamed(context, RoutesName.userScreen);
+
+                                  }
                               ),
 
                               if (type != "Agent")
@@ -195,18 +235,30 @@ class _HomeScreenState extends State<HomeScreen> {
                                   "Agents",
                                   data.agents.toString(),
                                   Colors.blue.shade600,
+                                    onTap: () {
+                                      Navigator.pushNamed(context, RoutesName.agentScreen);
+
+                                    }
                                 ),
 
                               _buildStatCard(
                                 "Tutorials",
                                 data.tutorials.toString(),
                                 Colors.green,
+                                  onTap: () {
+                                    Navigator.pushNamed(context, RoutesName.tutorialScreen);
+
+                                  }
                               ),
 
                               _buildStatCard(
                                 "Wallet Balance",
-                                data.walletBalance,
+                                data.walletBalance.toString(),
                                 Colors.deepOrange,
+                                  onTap: () {
+                                    Navigator.pushNamed(context, RoutesName.walletScreen);
+
+                                  }
                               ),
                             ],
                           ),

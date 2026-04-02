@@ -91,7 +91,9 @@ class _AppDrawerState extends State<AppDrawer> {
                   GestureDetector(
                     onTap: () {
                       final referralLink =
-                          "https://medconnect.org.in/bharosa/registration?referral_id=$uniqueCode";
+                     //     "https://medconnect.org.in/bharosa/registration?referral_id=$uniqueCode";
+                     "https://www.medrayder.com/medrayder_partners?referral_id=$uniqueCode";
+
 
                       Share.share(
                         "Join using my referral link:\n$referralLink",

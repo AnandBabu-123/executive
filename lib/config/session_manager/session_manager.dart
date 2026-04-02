@@ -17,6 +17,18 @@ class SessionManager {
     await prefs.setInt("id", user.id);
   }
 
+  /// 🔥 SAVE PROFILE IMAGE
+  static Future<void> saveProfileImage(String image) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString("profile_image", image);
+  }
+
+  /// 🔥 GET PROFILE IMAGE
+  static Future<String?> getProfileImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString("profile_image");
+  }
+
   /// ================= GET TOKEN =================
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();

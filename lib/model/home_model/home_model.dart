@@ -2,11 +2,11 @@ class HomeModel {
   final String name;
   final String image;
   final int totalSubscriptions;
-  final String monthlyEarnings;
+  final int monthlyEarnings;
   final int users;
   final int agents;
   final int tutorials;
-  final String walletBalance;
+  final int walletBalance;
   final List<RecentPayment> recentPayments;
 
   HomeModel({
@@ -21,27 +21,50 @@ class HomeModel {
     required this.recentPayments,
   });
 
+  /// 🔥 Common Parser (handles int, String, double, null)
+  static int parseToInt(dynamic value) {
+    if (value == null) return 0;
+
+    if (value is int) return value;
+
+    if (value is double) return value.toInt();
+
+    if (value is String) {
+      return int.tryParse(value) ??
+          double.tryParse(value)?.toInt() ??
+          0;
+    }
+
+    return 0;
+  }
+
   factory HomeModel.fromJson(Map<String, dynamic> json) {
-    final data = json["result"][0];
+    final data = json["result"] != null && json["result"].isNotEmpty
+        ? json["result"][0]
+        : {};
 
     return HomeModel(
       name: data["full_name"] ?? "",
       image: data["image"] ?? "",
-      totalSubscriptions: data["total_subscriptions"] ?? 0,
-      monthlyEarnings: data["monthly_earnings"] ?? "0",
-      users: data["users"] ?? 0,
-      agents: data["agents"] ?? 0,
-      tutorials: data["tutorials"] ?? 0,
-      walletBalance: data["wallet_balance"] ?? "0",
-      recentPayments: (data["recent_payment"] as List)
-          .map((e) => RecentPayment.fromJson(e))
-          .toList(),
+
+      totalSubscriptions: parseToInt(data["total_subscriptions"]),
+      monthlyEarnings: parseToInt(data["monthly_earnings"]),
+      users: parseToInt(data["users"]),
+      agents: parseToInt(data["agents"]),
+      tutorials: parseToInt(data["tutorials"]),
+      walletBalance: parseToInt(data["wallet_balance"]),
+
+      recentPayments: data["recent_payment"] != null
+          ? List<RecentPayment>.from(
+        data["recent_payment"].map((e) => RecentPayment.fromJson(e)),
+      )
+          : [],
     );
   }
 }
 
 class RecentPayment {
-  final String amount;
+  final int amount;
   final String date;
   final String name;
 
@@ -53,9 +76,9 @@ class RecentPayment {
 
   factory RecentPayment.fromJson(Map<String, dynamic> json) {
     return RecentPayment(
-      amount: json["total_amount"],
-      date: json["created_on"],
-      name: json["name"],
+      amount: HomeModel.parseToInt(json["total_amount"]),
+      date: json["created_on"] ?? "",
+      name: json["name"] ?? "",
     );
   }
 }

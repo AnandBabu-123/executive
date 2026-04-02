@@ -21,6 +21,9 @@ class AppUrl {
   static const String about = "partner/get-pages/about_us";
   static const String terms = "partner/get-pages/terms";
   static const String privacy = "partner/get-pages/privacy";
+  static const String subscription ="partner/subscriptions-list";
+  static const String tutorials ="partner/get-tutorials";
+  static const String notification ="partner/read-notification";
   static const String getWallet ="partner/wallet/history";
   static const String walletWithDraw ="partner/wallet/debit";
 

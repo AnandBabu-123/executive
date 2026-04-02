@@ -18,10 +18,16 @@ import '../../bloc/contact_bloc/contact_bloc.dart';
 import '../../bloc/home_bloc/home_bloc.dart';
 import '../../bloc/home_bloc/home_event.dart';
 import '../../bloc/login_bloc/login_bloc.dart';
+import '../../bloc/notification_bloc/notification_bloc.dart';
+import '../../bloc/notification_bloc/notification_event.dart';
 import '../../bloc/otp_bloc/otp_bloc.dart';
 import '../../bloc/privacy_bloc/privacy_bloc.dart';
 import '../../bloc/profile_bloc/profile_bloc.dart';
+import '../../bloc/subscription_bloc/subscription_bloc.dart';
+import '../../bloc/subscription_bloc/subscription_event.dart';
 import '../../bloc/terms_bloc/terms_bloc.dart';
+import '../../bloc/tutorial_bloc/tutorial_bloc.dart';
+import '../../bloc/tutorial_bloc/tutorial_event.dart';
 import '../../bloc/user_bloc/user_bloc.dart';
 import '../../bloc/wallet_bloc/wallet_bloc.dart';
 import '../../network/dio_network/dio_client.dart';
@@ -37,9 +43,12 @@ import '../../repository/bank_details_repository/update_bank_repository.dart';
 import '../../repository/contact_repo/conatctus_repository.dart';
 import '../../repository/home_repository/home_repository.dart';
 import '../../repository/login_repo/login_repository.dart';
+import '../../repository/notification_repository/notification_repository.dart';
 import '../../repository/otp_repo/otp_repository.dart';
 import '../../repository/profile_repo/profile_repository.dart';
 import '../../repository/profile_repo/update_profole_repository.dart';
+import '../../repository/subscriptions_repository/subscriptions_repository.dart';
+import '../../repository/tutorial_repository/tutorial_repository.dart';
 import '../../repository/user_repo/user_post_repository.dart';
 import '../../repository/user_repo/user_repository.dart';
 import '../../repository/wallet_repository/wallet_repository.dart';
@@ -49,6 +58,9 @@ import '../../views/about_screen/privacy_screen.dart';
 import '../../views/about_screen/terms_screen.dart';
 import '../../views/agent_screen/agent_screen.dart';
 import '../../views/bottom_navigation_screens/bottom_navigation_screens.dart';
+import '../../views/notification_screen/notification_screen.dart';
+import '../../views/subscription_screen/subscription_screen.dart';
+import '../../views/tutorial_screen/tutorial_screen.dart';
 import '../../views/user_screen/user_screen.dart';
 import '../session_manager/session_manager.dart';
 
@@ -187,7 +199,7 @@ class Routes {
                 ),
               ),
 
-              /// 🔥 UPDATE PROFILE REPO (ADD THIS)
+              ///  UPDATE PROFILE REPO (ADD THIS)
               UpdateProfileRepository(
                 DioClient(
                   dio: Dio(),
@@ -202,13 +214,31 @@ class Routes {
           ),
         );
 
+      case RoutesName.tutorialScreen:
+        return MaterialPageRoute(
+          builder: (context) {
+            final dioClient = DioClient(
+              dio: Dio(),
+              networkInfo: NetworkInfo(),
+              tokenProvider: () async => await SessionManager.getToken(),
+            );
+
+            return BlocProvider(
+              create: (_) => TutorialBloc(
+                TutorialRepository(dioClient),
+              )..add(FetchTutorials()),
+              child: const TutorialScreen(),
+            );
+          },
+        );
+
       case RoutesName.contactUsScreen:
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
             create: (_) => ContactBloc(
               ContactUsRepository(
                 DioClient(
-                  dio: Dio(), // ✅ MUST ADD
+                  dio: Dio(), //  MUST ADD
                   networkInfo: NetworkInfo(),
                   tokenProvider: () async {
                     return await SessionManager.getToken();
@@ -230,13 +260,14 @@ class Routes {
               networkInfo: NetworkInfo(),
               tokenProvider: () async => await SessionManager.getToken(),
             );
+            final scaffoldKey = GlobalKey<ScaffoldState>();
 
             return BlocProvider<AgentBloc>(
               create: (_) => AgentBloc(
                 agentRepository: AgentRepository(dioClient),
                 postAgentRepository: PostAgentRepository(dioClient),
               ),
-              child: const AgentScreen(),
+              child:  AgentScreen(scaffoldKey: scaffoldKey, showBackButton: true),
             );
           },
         );
@@ -250,7 +281,7 @@ class Routes {
               networkInfo: NetworkInfo(),
               tokenProvider: () async => await SessionManager.getToken(),
             );
-
+            final scaffoldKey = GlobalKey<ScaffoldState>();
             return MultiBlocProvider(
               providers: [
                 BlocProvider<UserBloc>(
@@ -259,13 +290,29 @@ class Routes {
                     userPostRepository: UserPostRepository(dioClient),
                   ),
                 ),
-                // Optional: You can add BloodGroupBloc or CategoryBloc here if using Bloc for dropdowns
               ],
-              child: const UserScreen(),
+              child:  UserScreen(scaffoldKey: scaffoldKey, showBackButton: true,),
             );
           },
         );
 
+      case RoutesName.subscriptionScreen:
+        return MaterialPageRoute(
+          builder: (context) {
+            final dioClient = DioClient(
+              dio: Dio(),
+              networkInfo: NetworkInfo(),
+              tokenProvider: () async => await SessionManager.getToken(),
+            );
+            final scaffoldKey = GlobalKey<ScaffoldState>();
+            return BlocProvider(
+              create: (_) => SubscriptionBloc(
+                subscriptionsRepository: SubscriptionsRepository(dioClient),
+              )..add(FetchSubscriptions()),
+              child:  SubscriptionScreen(scaffoldKey: scaffoldKey, showBackButton: true,),
+            );
+          },
+        );
       case RoutesName.aboutScreen:
         return MaterialPageRoute(
           builder: (context) {
@@ -325,7 +372,18 @@ class Routes {
 
       // case RoutesName.homeScreen:
       //   return MaterialPageRoute(
-      //     builder: (_) => const HomeScreen(),
+      //     builder: (_) {
+      //       final dioClient = DioClient(
+      //         dio: Dio(),
+      //         networkInfo: NetworkInfo(),
+      //         tokenProvider: () async => await SessionManager.getToken(),
+      //       );
+      //
+      //       return BlocProvider(
+      //         create: (_) => HomeBloc(HomeRepository(dioClient))..add(FetchHomeData()),
+      //         child: const BottomNavigationScreens(),
+      //       );
+      //     },
       //   );
 
       case RoutesName.homeScreen:
@@ -337,13 +395,47 @@ class Routes {
               tokenProvider: () async => await SessionManager.getToken(),
             );
 
-            return BlocProvider(
-              create: (_) => HomeBloc(HomeRepository(dioClient))..add(FetchHomeData()),
+            return MultiBlocProvider(
+              providers: [
+
+                /// 🔷 HOME BLOC
+                BlocProvider<HomeBloc>(
+                  create: (_) => HomeBloc(
+                    HomeRepository(dioClient),
+                  )..add(FetchHomeData()),
+                ),
+
+                /// 🔷 NOTIFICATION BLOC (🔥 ADD THIS)
+                BlocProvider<NotificationBloc>(
+                  create: (_) => NotificationBloc(
+                    repository: NotificationRepository(dioClient),
+                   )..add(FetchNotifications()),
+                ),
+              ],
+
+              /// 🔥 IMPORTANT
               child: const BottomNavigationScreens(),
             );
           },
         );
-    /// ================= DRAWER =================
+      case RoutesName.notificationScreen:
+        return MaterialPageRoute(
+          builder: (context) {
+            final dioClient = DioClient(
+              dio: Dio(),
+              networkInfo: NetworkInfo(),
+              tokenProvider: () async => await SessionManager.getToken(),
+            );
+
+            return BlocProvider(
+              create: (_) => NotificationBloc(
+                repository: NotificationRepository(dioClient),
+              )..add(FetchNotifications()),
+              child: const NotificationScreen(),
+            );
+          },
+        );
+
 
     /// ================= DEFAULT =================
       default:

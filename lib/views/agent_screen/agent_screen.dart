@@ -13,7 +13,8 @@ import '../../model/agent_model/agent_model.dart';
 
 class AgentScreen extends StatefulWidget {
   final bool showBackButton;
-  const AgentScreen({super.key,this.showBackButton = false});
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  const AgentScreen({super.key,this.showBackButton = false,required this.scaffoldKey});
 
   @override
   State<AgentScreen> createState() => _AgentScreenState();
@@ -23,13 +24,14 @@ class _AgentScreenState extends State<AgentScreen> {
   final TextEditingController searchController = TextEditingController();
   final ScrollController scrollController = ScrollController();
   late AgentBloc agentBloc;
-
+  String? profileImage;
   List<Agent> allAgents = []; // Store all agents for local search
   List<Agent> displayedAgents = []; // Display filtered agents
 
   @override
   void initState() {
     super.initState();
+    _loadImage();
     agentBloc = context.read<AgentBloc>();
     agentBloc.add(FetchAgents());
 
@@ -43,7 +45,13 @@ class _AgentScreenState extends State<AgentScreen> {
       }
     });
   }
+  Future<void> _loadImage() async {
+    final img = await SessionManager.getProfileImage();
 
+    setState(() {
+      profileImage = img;
+    });
+  }
   void _openAddAgentBottomSheet() {
     showModalBottomSheet(
       context: context,
@@ -79,29 +87,66 @@ class _AgentScreenState extends State<AgentScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.blue,
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
 
-        iconTheme: const IconThemeData(
-          color: Colors.white,
-        ),
-
+        /// 🔥 LEFT SIDE
         leading: widget.showBackButton
             ? IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         )
-            : null,
+            : Builder(
+          builder: (context) {
+            return IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                widget.scaffoldKey?.currentState?.openDrawer();
+              },
+            );
+          },
+        ),
 
-        /// ✅ THIS IS REQUIRED
-        centerTitle: true,
-
+        /// 🔥 TITLE
         title: const Text(
-          "Agent List",
+          "Agents",
           style: TextStyle(
             fontSize: 19,
             color: Colors.white,
             fontWeight: FontWeight.w500,
           ),
         ),
+
+        /// 🔥 RIGHT SIDE (ONLY FOR DRAWER MODE)
+        actions: widget.showBackButton
+            ? null
+            : [
+          const Padding(
+            padding: EdgeInsets.only(right: 16),
+            child: CircleAvatar(
+              backgroundColor: Colors.white,
+              radius: 18,
+              child: Icon(
+                Icons.notifications,
+                color: AppColors.blue,
+                size: 20,
+              ),
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: CircleAvatar(
+              radius: 18,
+              backgroundColor: Colors.white,
+              backgroundImage: (profileImage != null &&
+                  profileImage!.isNotEmpty)
+                  ? NetworkImage(profileImage!)
+                  : const AssetImage("assets/userLogo.png")
+              as ImageProvider,
+            ),
+          ),
+        ],
       ),
       body: Column(
         children: [

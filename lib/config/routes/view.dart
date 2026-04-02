@@ -15,3 +15,4 @@ export '../../views/about_screen/privacy_screen.dart';
 export '../../views/subscription_screen/subscription_screen.dart';
 export '../../views/notification_screen/notification_screen.dart';
 export '../../views/bottom_navigation_screens/bottom_navigation_screens.dart';
+export '../../views/tutorial_screen/tutorial_screen.dart';
