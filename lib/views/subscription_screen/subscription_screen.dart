@@ -76,6 +76,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.whiteColor,
       appBar: AppBar(
         backgroundColor: AppColors.blue,
         centerTitle: true,
@@ -229,19 +230,26 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: const [
-                          BoxShadow(color: Colors.black12, blurRadius: 5)
+                          BoxShadow(
+                              color: Colors.grey,
+                              blurRadius: 3,
+                              offset: Offset(0, 2)),
                         ],
                       ),
                       child: Row(
                         children: [
 
-                          const CircleAvatar(
-                            radius: 25,
-                            backgroundImage:
-                            AssetImage("assets/icon.png"),
+                          CircleAvatar(
+                            radius: 35,
+                            backgroundImage: item.userImage.isNotEmpty
+                                ? NetworkImage(item.userImage)
+                                : null,
+                            child: item.userImage.isEmpty
+                                ? const Icon(Icons.person)
+                                : null,
                           ),
 
-                          const SizedBox(width: 12),
+                          const SizedBox(width: 15),
 
                           Expanded(
                             child: Column(
@@ -250,13 +258,15 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                                 Text(item.name,
                                     style: const TextStyle(
                                         fontWeight: FontWeight.bold)),
+                                SizedBox(height: 4,),
                                 Text(item.plan,
                                     style: const TextStyle(
-                                        color: Colors.grey)),
+                                        fontSize: 13 )),
+                                SizedBox(height: 4,),
                                 Text("${item.date} • ${item.time}",
                                     style: const TextStyle(
                                         fontSize: 12,
-                                        color: Colors.grey)),
+                                        )),
                               ],
                             ),
                           ),

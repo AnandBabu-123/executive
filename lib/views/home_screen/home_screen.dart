@@ -1,3 +1,4 @@
+import 'package:executive/bloc/home_bloc/home_event.dart';
 import 'package:executive/config/colors/app_colors.dart';
 import 'package:executive/config/routes/routes_name.dart';
 import 'package:flutter/material.dart';
@@ -28,11 +29,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String name = "";
   String type ="";
-  String? profileImage;
+
 
   @override void initState() {
     super.initState();
     _loadUserData();
+  }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    context.read<HomeBloc>().add(FetchHomeData());
   }
 
   Future<void> _loadUserData() async {
@@ -47,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
+    backgroundColor: AppColors.whiteColor,
      drawer: AppDrawer(rootContext: context),
 
 
@@ -90,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
 
-                  /// 🔴 SHOW ONLY IF > 0
+
                   if (unread > 0)
                     Positioned(
                       right: 8,
@@ -122,19 +129,22 @@ class _HomeScreenState extends State<HomeScreen> {
           /// 🔥 PROFILE IMAGE FROM API
           Padding(
             padding: const EdgeInsets.only(right: 12),
-            child: CircleAvatar(
-              radius: 18,
-              backgroundColor: Colors.white,
+            child: BlocBuilder<HomeBloc, HomeState>(
+              builder: (context, state) {
+                String image = "";
 
-              /// ✅ IMAGE LOGIC
-              backgroundImage: (profileImage != null &&
-                  profileImage!.isNotEmpty)
-                  ? NetworkImage(profileImage!)
-                  : const AssetImage("assets/userLogo.png")
-              as ImageProvider,
+                if (state is HomeLoaded) {
+                  image = state.data.image;
+                }
 
-              /// ✅ OPTIONAL: fallback if network fails
-              onBackgroundImageError: (_, __) {},
+                return CircleAvatar(
+                  radius: 18,
+                  backgroundColor: Colors.white,
+                  backgroundImage: (image.isNotEmpty && image.startsWith("http"))
+                      ? NetworkImage(image)
+                      : const AssetImage("assets/userLogo.png") as ImageProvider,
+                );
+              },
             ),
           ),
         ],
@@ -156,10 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             final data = state.data;
 
-            /// 🔥 SET PROFILE IMAGE FROM API
-            profileImage = (data.image != null && data.image!.isNotEmpty)
-                ? "${data.image}"
-                : null;
+
 
             return SingleChildScrollView(
               child: Column(
@@ -376,7 +383,10 @@ class _HomeScreenState extends State<HomeScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 5)
+          BoxShadow(
+              color: Colors.grey,
+              blurRadius: 3,
+              offset: Offset(0, 2)),
         ],
       ),
       child: Row(

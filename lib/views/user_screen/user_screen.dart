@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../bloc/home_bloc/home_bloc.dart';
+import '../../bloc/home_bloc/home_event.dart';
 import '../../bloc/user_bloc/user_bloc.dart';
 import '../../bloc/user_bloc/user_event.dart';
 import '../../bloc/user_bloc/user_state.dart';
@@ -31,9 +33,11 @@ class _UserScreenState extends State<UserScreen> {
   List<User> displayedUsers = [];
   String? profileImage;
 
+
   @override
   void initState() {
     super.initState();
+
     _loadImage();
     userBloc = context.read<UserBloc>();
     userBloc.add(FetchUsers());
@@ -87,6 +91,7 @@ class _UserScreenState extends State<UserScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.whiteColor,
       appBar: AppBar(
         backgroundColor: AppColors.blue,
         elevation: 0,
@@ -114,7 +119,7 @@ class _UserScreenState extends State<UserScreen> {
 
         /// 🔥 TITLE
         title: const Text(
-          "Users List",
+          "Users ",
           style: TextStyle(
             fontSize: 19,
             color: Colors.white,
@@ -150,7 +155,6 @@ class _UserScreenState extends State<UserScreen> {
                   ? NetworkImage(profileImage!)
                   : const AssetImage("assets/userLogo.png")
               as ImageProvider,
-              onBackgroundImageError: (_, __) {},
             ),
           ),
         ],
@@ -240,18 +244,17 @@ class _UserScreenState extends State<UserScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
-                      color: Colors.grey.shade200,
-                      blurRadius: 5,
-                      offset: const Offset(0, 2),
-                    )
+                        color: Colors.grey,
+                        blurRadius: 3,
+                        offset: Offset(0, 2)),
                   ],
                 ),
                 child: Row(
                   children: [
                     CircleAvatar(
-                      radius: 30,
+                      radius: 35,
                       backgroundImage: NetworkImage(user.image),
                     ),
                     const SizedBox(width: 18),
@@ -262,9 +265,9 @@ class _UserScreenState extends State<UserScreen> {
                           Text(user.name,
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 2),
+                          const SizedBox(height: 4),
                           Text(user.email),
-                          const SizedBox(height: 2),
+                          const SizedBox(height: 4),
                           Text(user.mobile),
                         ],
                       ),

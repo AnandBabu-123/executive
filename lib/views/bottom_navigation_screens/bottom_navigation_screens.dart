@@ -64,7 +64,7 @@ class _BottomNavigationScreensState
   List<Map<String, dynamic>> getNavItems() {
     List<Map<String, dynamic>> items = [
       {"icon": Icons.home, "label": "Home"},
-      {"icon": Icons.subscriptions, "label": "Sales"},
+      {"icon": Icons.point_of_sale_sharp, "label": "Sales"},
       {"icon": Icons.people, "label": "Users"},
     ];
 

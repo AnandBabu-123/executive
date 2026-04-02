@@ -7,6 +7,8 @@ import '../../bloc/agent_bloc/agent_event.dart';
 import '../../bloc/agent_bloc/agent_state.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import '../../bloc/home_bloc/home_bloc.dart';
+import '../../bloc/home_bloc/home_event.dart';
 import '../../config/session_manager/session_manager.dart';
 import '../../model/agent_model/agent_model.dart';
 
@@ -52,6 +54,7 @@ class _AgentScreenState extends State<AgentScreen> {
       profileImage = img;
     });
   }
+
   void _openAddAgentBottomSheet() {
     showModalBottomSheet(
       context: context,
@@ -85,6 +88,7 @@ class _AgentScreenState extends State<AgentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.whiteColor,
       appBar: AppBar(
         backgroundColor: AppColors.blue,
         centerTitle: true,
@@ -205,14 +209,14 @@ class _AgentScreenState extends State<AgentScreen> {
                           boxShadow: const [
                             BoxShadow(
                                 color: Colors.grey,
-                                blurRadius: 5,
+                                blurRadius: 3,
                                 offset: Offset(0, 2)),
                           ],
                         ),
                         child: Row(
                           children: [
                             CircleAvatar(
-                              radius: 25,
+                              radius: 32,
                               backgroundImage: NetworkImage(agent.image),
                             ),
                             const SizedBox(width: 12),
@@ -223,7 +227,9 @@ class _AgentScreenState extends State<AgentScreen> {
                                   Text(agent.name,
                                       style: const TextStyle(
                                           fontWeight: FontWeight.bold)),
+                                  SizedBox(height: 4,),
                                   Text(agent.email),
+                                  SizedBox(height: 4,),
                                   Text(agent.mobile),
                                 ],
                               ),
