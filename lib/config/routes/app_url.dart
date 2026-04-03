@@ -1,6 +1,11 @@
 class AppUrl {
 
-  static const String baseUrl = "https://app.medconnect.org.in/api/";
+  // production url  https://app.medrayder.in/api/
+
+ // static const String baseUrl = "https://app.medrayder.in/api/";
+
+
+   static const String baseUrl = "https://app.medconnect.org.in/api/";
   static const String imageBaseUrl = "https://medconnect.org.in/bharosa/";
 
   /// login
@@ -26,5 +31,6 @@ class AppUrl {
   static const String notification ="partner/read-notification";
   static const String getWallet ="partner/wallet/history";
   static const String walletWithDraw ="partner/wallet/debit";
+  static const String updateApi = "version-control?version";
 
 }

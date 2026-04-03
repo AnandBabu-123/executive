@@ -1,7 +1,19 @@
 import 'package:executive/config/session_manager/session_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../../bloc/update_bloc/update_bloc.dart';
+import '../../bloc/update_bloc/update_event.dart';
+import '../../bloc/update_bloc/update_state.dart';
 import '../../config/routes/routes_name.dart';
+
+
+import 'package:executive/config/session_manager/session_manager.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+
+import '../../config/routes/routes_name.dart';
+import '../../model/update_response/update_response.dart';
 
 
 class SplashScreen extends StatefulWidget {
@@ -18,8 +30,6 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> _animation;
 
   @override
-
-  @override
   void initState() {
     super.initState();
 
@@ -34,24 +44,24 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.repeat(reverse: true);
 
-    /// 🔥 Check login after delay
-    _checkLogin();
+    /// 🔥 CALL UPDATE API (instead of direct login)
+    context.read<UpdateBloc>().add(CheckUpdateEvent());
   }
+
+  /// ✅ LOGIN FLOW (same as your code)
   void _checkLogin() async {
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 2));
 
     final token = await SessionManager.getToken();
 
     if (!mounted) return;
 
     if (token != null && token.isNotEmpty) {
-
       Navigator.pushReplacementNamed(
         context,
         RoutesName.homeScreen,
       );
     } else {
-
       Navigator.pushReplacementNamed(
         context,
         RoutesName.loginScreen,
@@ -59,6 +69,27 @@ class _SplashScreenState extends State<SplashScreen>
     }
   }
 
+  /// 🔴 FORCE UPDATE DIALOG
+  void _showUpdateDialog(UpdateResult result) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Update Required"),
+          content: Text(result.message),
+          actions: [
+            TextButton(
+              onPressed: () {
+                // 👉 Add Play Store link here
+              },
+              child: const Text("Update"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   void dispose() {
@@ -69,24 +100,39 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
+    return BlocListener<UpdateBloc, UpdateState>(
+      listener: (context, state) {
 
-      body: Center(
+        /// 🔴 If update required → block app
+        if (state is UpdateRequired) {
+          _showUpdateDialog(state.result);
+        }
 
-        child: AnimatedBuilder(
-          animation: _animation,
+        /// ✅ If no update → continue login
+        else if (state is UpdateNotRequired) {
+          _checkLogin();
+        }
 
-          builder: (context, child) {
+        /// ⚠️ If error → allow login anyway
+        else if (state is UpdateError) {
+          _checkLogin();
+        }
+      },
 
-            return Transform.scale(
-              scale: _animation.value,
-
-              child: SvgPicture.asset(
-                "assets/med.svg",
-                height: 120,
-              ),
-            );
-          },
+      child: Scaffold(
+        body: Center(
+          child: AnimatedBuilder(
+            animation: _animation,
+            builder: (context, child) {
+              return Transform.scale(
+                scale: _animation.value,
+                child: SvgPicture.asset(
+                  "assets/med.svg",
+                  height: 120,
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

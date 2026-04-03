@@ -28,6 +28,7 @@ import '../../bloc/subscription_bloc/subscription_event.dart';
 import '../../bloc/terms_bloc/terms_bloc.dart';
 import '../../bloc/tutorial_bloc/tutorial_bloc.dart';
 import '../../bloc/tutorial_bloc/tutorial_event.dart';
+import '../../bloc/update_bloc/update_bloc.dart';
 import '../../bloc/user_bloc/user_bloc.dart';
 import '../../bloc/wallet_bloc/wallet_bloc.dart';
 import '../../network/dio_network/dio_client.dart';
@@ -49,6 +50,7 @@ import '../../repository/profile_repo/profile_repository.dart';
 import '../../repository/profile_repo/update_profole_repository.dart';
 import '../../repository/subscriptions_repository/subscriptions_repository.dart';
 import '../../repository/tutorial_repository/tutorial_repository.dart';
+import '../../repository/update_repository/update_repository.dart';
 import '../../repository/user_repo/user_post_repository.dart';
 import '../../repository/user_repo/user_repository.dart';
 import '../../repository/wallet_repository/wallet_repository.dart';
@@ -70,11 +72,24 @@ class Routes {
     switch (settings.name) {
 
     /// ================= SPLASH =================
+    //   case RoutesName.splashScreen:
+    //     return MaterialPageRoute(
+    //       builder: (_) => const SplashScreen(),
+    //     );
+
+
       case RoutesName.splashScreen:
         return MaterialPageRoute(
-          builder: (_) => const SplashScreen(),
+          builder: (_) => BlocProvider(
+            create: (_) => UpdateBloc(UpdateRepository(
+              DioClient(
+                dio: Dio(),
+                networkInfo: NetworkInfo(),
+                tokenProvider: () async => null,
+              ),)),
+            child: const SplashScreen(),
+          ),
         );
-
     /// ================= LOGIN =================
       case RoutesName.loginScreen:
         return MaterialPageRoute(
