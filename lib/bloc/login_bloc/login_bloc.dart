@@ -1,3 +1,4 @@
+import '../../network/dio_network/api_exception.dart';
 import '../../repository/login_repo/login_repository.dart';
 import 'login_event.dart';
 import 'login_state.dart';
@@ -23,7 +24,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
       emit(LoginSuccess(response));
     } catch (e) {
-      emit(LoginError(e.toString()));
+      if (e is ApiException) {
+        emit(LoginError(e.message));
+      } else {
+        emit(LoginError("Unexpected error occurred"));
+      }
     }
   }
 }

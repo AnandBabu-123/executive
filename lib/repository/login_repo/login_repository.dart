@@ -1,6 +1,12 @@
 
 import '../../config/routes/app_url.dart';
 import '../../model/login_response_model/login_response_model.dart';
+import '../../network/dio_network/api_exception.dart';
+import '../../network/dio_network/dio_client.dart';
+
+import '../../config/routes/app_url.dart';
+import '../../model/login_response_model/login_response_model.dart';
+import '../../network/dio_network/api_exception.dart';
 import '../../network/dio_network/dio_client.dart';
 
 class LoginRepository {
@@ -20,15 +26,27 @@ class LoginRepository {
       data: body,
     );
 
-    if (response == null) {
-      throw Exception("Null response");
+    print("LOGIN RAW RESPONSE: $response");
+    print("TYPE: ${response.runtimeType}");
+
+    /// ✅ SAFETY CHECK
+    if (response is! Map) {
+      throw ApiException("Invalid response format");
     }
 
-    print(response);
-    if (response["status"] == 200) {
-      return LoginResponseModel.fromJson(response);
+    /// ✅ CONVERT HERE ONLY ONCE
+    final Map<String, dynamic> data =
+    Map<String, dynamic>.from(response);
+
+    print("CONVERTED DATA: $data");
+
+    /// ✅ API STATUS CHECK
+    if (data["status"] == 200) {
+      return LoginResponseModel.fromJson(data);
     } else {
-      throw response["message"];
+      throw ApiException(
+        data["message"]?.toString() ?? "Login Failed",
+      );
     }
   }
 }
