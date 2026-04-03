@@ -532,46 +532,6 @@ class _AddUserBottomSheetState extends State<AddUserBottomSheet> {
                 builder: (context, state) {
                   final loading = state is UserAdding;
 
-                  // return SizedBox(
-                  //   width: double.infinity,
-                  //   child: ElevatedButton(
-                  //     onPressed: loading
-                  //         ? null
-                  //         : () async {
-                  //       if (name.text.isEmpty ||
-                  //           email.text.isEmpty ||
-                  //           mobile.text.isEmpty ||
-                  //           gender == null ||
-                  //           dob.text.isEmpty ||
-                  //           selectedBloodGroupId == null ||
-                  //           selectedCategoryId == null) {
-                  //         _showButtonMessage("Please fill all fields");
-                  //         return;
-                  //       }
-                  //
-                  //       final userId =
-                  //       await SessionManager.getUserId();
-                  //
-                  //       widget.userBloc.add(AddUser(
-                  //         name: name.text,
-                  //         email: email.text,
-                  //         mobile: mobile.text,
-                  //         gender: gender!,
-                  //         dob: dob.text,
-                  //         bloodGroupId: selectedBloodGroupId!,
-                  //         coverageCategoryId: selectedCategoryId!,
-                  //         userId: userId!,
-                  //         image: pickedImage != null
-                  //             ? File(pickedImage!.path)
-                  //             : null,
-                  //       ));
-                  //     },
-                  //     child: loading
-                  //         ? const CircularProgressIndicator(
-                  //         color: Colors.white)
-                  //         : const Text("Save"),
-                  //   ),
-                  // );
 
                   return SizedBox(
                     width: double.infinity,
