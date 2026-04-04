@@ -12,6 +12,9 @@ class Agent {
   final String dob;
   final String occupation;
 
+  // ✅ NEW FIELD
+  final SubscriptionData? subscriptionData;
+
   Agent({
     required this.id,
     required this.type,
@@ -25,6 +28,7 @@ class Agent {
     required this.gender,
     required this.dob,
     required this.occupation,
+    this.subscriptionData,
   });
 
   factory Agent.fromJson(Map<String, dynamic> json) {
@@ -41,9 +45,35 @@ class Agent {
       gender: json['gender'] ?? "",
       dob: json['dob'] ?? "",
       occupation: json['occupation'] ?? "",
+
+      // ✅ PARSE SUBSCRIPTION DATA
+      subscriptionData: json['subscription_data'] is Map<String, dynamic>
+          ? SubscriptionData.fromJson(json['subscription_data'])
+          : null,
     );
   }
 }
+
+class SubscriptionData {
+  final int totalSubscription;
+  final int totalFamilySubscription;
+  final int totalSingleSubscription;
+
+  SubscriptionData({
+    required this.totalSubscription,
+    required this.totalFamilySubscription,
+    required this.totalSingleSubscription,
+  });
+
+  factory SubscriptionData.fromJson(Map<String, dynamic> json) {
+    return SubscriptionData(
+      totalSubscription: json['total_subscription'] ?? 0,
+      totalFamilySubscription: json['total_family_subscription'] ?? 0,
+      totalSingleSubscription: json['total_single_subscription'] ?? 0,
+    );
+  }
+}
+
 class AgentPagination {
   final int currentPage;
   final int lastPage;

@@ -216,7 +216,7 @@ class _AgentScreenState extends State<AgentScreen> {
                         child: Row(
                           children: [
                             CircleAvatar(
-                              radius: 32,
+                              radius: 42,
                               backgroundImage: NetworkImage(agent.image),
                             ),
                             const SizedBox(width: 12),
@@ -224,14 +224,17 @@ class _AgentScreenState extends State<AgentScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(agent.name,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold)),
+                                  Text(agent.name, style: const TextStyle(fontWeight: FontWeight.bold)),
                                   SizedBox(height: 4,),
-                                  Text(agent.email),
                                   SizedBox(height: 4,),
                                   Text(agent.mobile),
-                                ],
+                                  SizedBox(height: 4,),
+                                  Text('Subscriptions :${agent.subscriptionData?.totalSubscription ?? 0}'),
+                                  SizedBox(height: 4,),
+                                  Text('single Subscriptions :${agent.subscriptionData?.totalFamilySubscription ?? 0}'),
+                                  SizedBox(height: 4,),
+                                  Text('Family Subscriptions :${agent.subscriptionData?.totalFamilySubscription ?? 0}'),
+                                                                 ],
                               ),
                             ),
                           ],

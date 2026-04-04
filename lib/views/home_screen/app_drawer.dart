@@ -92,7 +92,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     onTap: () {
                       final referralLink =
                      //     "https://medconnect.org.in/bharosa/registration?referral_id=$uniqueCode";
-                     "https://www.medrayder.com/medrayder_partners?referral_id=$uniqueCode";
+                     "https://medrayder.in/bharosa/registration/medrayder_partners?referral_id=$uniqueCode";
 
 
                       Share.share(
